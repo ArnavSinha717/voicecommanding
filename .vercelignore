@@ -1,0 +1,18 @@
+# Vercel does not read .gitignore for uploads, so the exclusions are repeated
+# here. Without this the CLI uploaded 1.3 GB of raw datasets on every deploy.
+
+# Raw source datasets — used only by the offline derivation scripts. What ships
+# is the derived output in src/data/*.generated.json.
+data-raw/
+
+node_modules/
+dist/
+coverage/
+
+# Build-time tooling that the deployed app never runs.
+scripts/
+tests/
+*.test.ts
+*.test.tsx
+
+.git/

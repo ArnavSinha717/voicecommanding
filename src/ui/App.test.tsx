@@ -10,7 +10,7 @@
  */
 
 import { afterEach, describe, expect, it } from 'vitest'
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 
 import App from './App'
 import { FakeSpeechAdapter } from '../adapters/speech/fake'
@@ -337,5 +337,41 @@ describe('degrading without a model', () => {
     fireEvent.click(mic())
     expect(await within(list()).findByText('Milk')).toBeDefined()
     expect(llm.completeCalls).toHaveLength(1)
+  })
+})
+
+describe('on-device recognition is requested only when it exists', () => {
+  it('does not force local processing when only cloud recognition is available', async () => {
+    // `processLocally: true` forces on-device recognition. Requesting it
+    // speculatively made Chrome reject any language whose pack was not
+    // installed, reported to the user as "not supported" for a language the
+    // cloud recogniser handles fine.
+    const speech = new FakeSpeechAdapter({ mode: 'cloud' }).enqueue('add milk')
+    render(
+      <App speech={speech} storage={new MemoryStorageAdapter()} llm={new FakeLlmAdapter({ available: false })} />,
+    )
+    await waitFor(() => expect(speech.startCalls.length + 1).toBeGreaterThan(0))
+    fireEvent.click(mic())
+    expect(speech.startCalls[0]?.preferOnDevice).toBe(false)
+  })
+
+  it('requests local processing when a model is present', async () => {
+    const speech = new FakeSpeechAdapter({ mode: 'on-device' }).enqueue('add milk')
+    render(
+      <App speech={speech} storage={new MemoryStorageAdapter()} llm={new FakeLlmAdapter({ available: false })} />,
+    )
+    // availability() is async; the mode has to land before the mic is pressed.
+    await waitFor(() => expect(screen.getByText(/running on your device/i)).toBeDefined())
+    fireEvent.click(mic())
+    expect(speech.startCalls[0]?.preferOnDevice).toBe(true)
+  })
+
+  it('always asks for several hypotheses so reranking has something to work with', () => {
+    const speech = new FakeSpeechAdapter().enqueue('add milk')
+    render(
+      <App speech={speech} storage={new MemoryStorageAdapter()} llm={new FakeLlmAdapter({ available: false })} />,
+    )
+    fireEvent.click(mic())
+    expect(speech.startCalls[0]?.maxAlternatives).toBeGreaterThan(1)
   })
 })

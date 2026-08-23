@@ -348,7 +348,17 @@ export function useShoppingList(options: Options = {}): ShoppingListApi {
     setMicState('listening')
 
     speech.start(
-      { lang: language, maxAlternatives: 5, interimResults: true, preferOnDevice: true },
+      {
+        lang: language,
+        maxAlternatives: 5,
+        interimResults: true,
+        // Only when availability() has confirmed a local model exists for this
+        // language. `processLocally: true` *forces* on-device recognition, so
+        // requesting it unconditionally made Chrome reject any language whose
+        // pack was not installed — reported as "not supported" for a language
+        // the cloud recogniser handles perfectly well.
+        preferOnDevice: recognitionMode === 'on-device',
+      },
       {
         onStart: () => setMicState('listening'),
         onAudioLevel: setAudioLevel,
@@ -374,7 +384,7 @@ export function useShoppingList(options: Options = {}): ShoppingListApi {
         },
       },
     )
-  }, [speech, language, handleUtterance])
+  }, [speech, language, recognitionMode, handleUtterance])
 
   const stopListening = useCallback(() => {
     speech.stop()

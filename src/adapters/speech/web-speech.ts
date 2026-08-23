@@ -34,7 +34,7 @@ const DEFAULT_MAX_ALTERNATIVES = 5
  * fails with a misleading code. The user-facing copy therefore avoids blaming the
  * user's connection and steers to the text fallback.
  */
-function mapError(code: string): SpeechError {
+function mapError(code: string, lang?: string): SpeechError {
   const taxonomy: Record<string, { code: SpeechErrorCode; message: string; recoverable: boolean }> = {
     'no-speech': {
       code: 'no-speech',
@@ -63,7 +63,10 @@ function mapError(code: string): SpeechError {
     },
     'language-not-supported': {
       code: 'language-unavailable',
-      message: 'That language is not available for speech here. Try another, or type instead.',
+      message:
+        lang === undefined
+          ? 'That language is not available for speech in this browser. Try another, or type instead.'
+          : `Speech recognition for ${lang} is not available in this browser. Switch language above, or type instead.`,
       recoverable: false,
     },
     aborted: {
@@ -104,9 +107,12 @@ function extractHypotheses(event: SpeechRecognitionEventLike): SpeechHypothesis[
   return hypotheses
 }
 
+/** How long to wait for any result before giving up and telling the user. */
+const SILENCE_TIMEOUT_MS = 12_000
+
 export class WebSpeechAdapter implements SpeechPort {
   private recognition: SpeechRecognitionLike | null = null
-  private meter: AudioLevelMeter | null = null
+  private watchdog: ReturnType<typeof setTimeout> | null = null
 
   isSupported(): boolean {
     return getSpeechRecognitionConstructor() !== null
@@ -159,21 +165,37 @@ export class WebSpeechAdapter implements SpeechPort {
     recognition.maxAlternatives = options.maxAlternatives ?? DEFAULT_MAX_ALTERNATIVES
     recognition.continuous = false
     if (options.preferOnDevice === true) {
-      // Ignored by engines that predate Chrome 139; harmless there.
+      // Only set when availability() has already confirmed a local model for
+      // this language: the flag *forces* local processing, so setting it
+      // speculatively turns a working cloud language into an outright failure.
+      // Ignored by engines predating Chrome 139, which is harmless.
       recognition.processLocally = true
     }
 
     recognition.onstart = () => listeners.onStart?.()
 
+    // The only honest signal that audio is reaching the recogniser. An earlier
+    // version drove the level meter from a second getUserMedia stream opened
+    // alongside this one; two consumers competed for the microphone, the meter
+    // won, and recognition was starved — it animated convincingly while never
+    // hearing a word. Anything the indicator shows now comes from the
+    // recogniser itself.
+    recognition.onaudiostart = () => listeners.onAudioLevel?.(0.35)
+    recognition.onspeechstart = () => listeners.onAudioLevel?.(1)
+    recognition.onspeechend = () => listeners.onAudioLevel?.(0)
+
     recognition.onresult = (event: SpeechRecognitionEventLike) => {
       const hypotheses = extractHypotheses(event)
       if (hypotheses.length === 0) return
       const result = event.results[event.resultIndex]
-      listeners.onResult({ hypotheses, isFinal: result?.isFinal ?? false })
+      const isFinal = result?.isFinal ?? false
+      if (isFinal) this.clearWatchdog()
+      listeners.onResult({ hypotheses, isFinal })
     }
 
     recognition.onerror = (event: SpeechRecognitionErrorEventLike) => {
-      listeners.onError(mapError(event.error))
+      this.clearWatchdog()
+      listeners.onError(mapError(event.error, options.lang))
     }
 
     recognition.onend = () => {
@@ -183,11 +205,20 @@ export class WebSpeechAdapter implements SpeechPort {
 
     this.recognition = recognition
 
-    if (listeners.onAudioLevel !== undefined) {
-      this.meter = new AudioLevelMeter(listeners.onAudioLevel)
-      // Best-effort: a failed level meter must never block recognition itself.
-      void this.meter.start()
-    }
+    // Watchdog. Chrome normally ends a non-continuous session itself once it
+    // detects a pause, but if it never receives usable audio it can sit open
+    // indefinitely with no result and no error — the user is left holding a
+    // button that appears to be listening forever.
+    this.watchdog = setTimeout(() => {
+      if (this.recognition !== recognition) return
+      listeners.onError({
+        code: 'no-speech',
+        message: "I didn't catch anything. Tap the mic and try again, or type it.",
+        recoverable: true,
+      })
+      this.abort()
+      listeners.onEnd()
+    }, SILENCE_TIMEOUT_MS)
 
     try {
       recognition.start()
@@ -203,8 +234,8 @@ export class WebSpeechAdapter implements SpeechPort {
   }
 
   stop(): void {
+    this.clearWatchdog()
     this.recognition?.stop()
-    this.meter?.stop()
   }
 
   abort(): void {
@@ -222,66 +253,12 @@ export class WebSpeechAdapter implements SpeechPort {
   }
 
   private teardown(): void {
+    this.clearWatchdog()
     this.recognition = null
-    this.meter?.stop()
-    this.meter = null
-  }
-}
-
-/**
- * Microphone level meter for the listening indicator.
- *
- * The Web Speech API does not expose its audio stream, so visualising input level
- * requires a parallel `getUserMedia` capture. This is purely cosmetic: every
- * failure path is swallowed, because a missing waveform must never prevent someone
- * from adding milk to their list.
- */
-class AudioLevelMeter {
-  private context: AudioContext | null = null
-  private stream: MediaStream | null = null
-  private frame: number | null = null
-
-  private readonly onLevel: (level: number) => void
-
-  constructor(onLevel: (level: number) => void) {
-    this.onLevel = onLevel
   }
 
-  async start(): Promise<void> {
-    try {
-      this.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const context = new AudioContext()
-      const source = context.createMediaStreamSource(this.stream)
-      const analyser = context.createAnalyser()
-      analyser.fftSize = 256
-      source.connect(analyser)
-      this.context = context
-
-      const buffer = new Uint8Array(analyser.frequencyBinCount)
-      const tick = (): void => {
-        analyser.getByteTimeDomainData(buffer)
-        // RMS deviation from the 128 silence midpoint, normalised to roughly [0,1].
-        let sumSquares = 0
-        for (const sample of buffer) {
-          const centred = (sample - 128) / 128
-          sumSquares += centred * centred
-        }
-        const rms = Math.sqrt(sumSquares / buffer.length)
-        this.onLevel(Math.min(1, rms * 3))
-        this.frame = requestAnimationFrame(tick)
-      }
-      this.frame = requestAnimationFrame(tick)
-    } catch {
-      this.stop()
-    }
-  }
-
-  stop(): void {
-    if (this.frame !== null) cancelAnimationFrame(this.frame)
-    this.frame = null
-    this.stream?.getTracks().forEach((track) => track.stop())
-    this.stream = null
-    void this.context?.close().catch(() => undefined)
-    this.context = null
+  private clearWatchdog(): void {
+    if (this.watchdog !== null) clearTimeout(this.watchdog)
+    this.watchdog = null
   }
 }

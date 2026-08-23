@@ -51,7 +51,11 @@ export interface SpeechRecognitionLike extends EventTarget {
   onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null
   onend: (() => void) | null
   onstart: (() => void) | null
+  /** Audio capture has begun. */
   onaudiostart: (() => void) | null
+  /** The recogniser believes it is hearing speech, not just noise. */
+  onspeechstart: (() => void) | null
+  onspeechend: (() => void) | null
 }
 
 export type AvailabilityStatus = 'available' | 'downloadable' | 'downloading' | 'unavailable'
