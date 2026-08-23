@@ -81,7 +81,11 @@ describe('replenishment suggestions', () => {
     const history = { milk: purchases(8, 5, 25) }
     const results = suggest({ items: [], history, now: NOW, limit: 10 })
     const milk = results.find((s) => s.canonicalId === 'milk')
-    expect(milk?.reason).toMatch(/You buy this about every .+ — it's been .+/)
+    expect(milk?.reason).toMatch(/Usually every .+ · last bought .+ ago/)
+    // The evidence travels with it so the interface can draw the model, not
+    // only quote it.
+    expect(milk?.cycle?.expectedDays).toBeGreaterThan(0)
+    expect(milk?.cycle?.daysSince).toBeGreaterThan(0)
   })
 })
 
@@ -93,9 +97,25 @@ describe('cold start', () => {
     expect(results.every((s) => s.reason !== '')).toBe(true)
   })
 
-  it('offers deals even with an empty list and no history', () => {
+  it('offers commonly-restocked items with an empty list and no history', () => {
     const results = suggest({ items: [], history: {}, now: NOW, limit: 5 })
-    expect(results.some((s) => s.kind === 'deal')).toBe(true)
+    const staples = results.filter((s) => s.kind === 'staple')
+    expect(staples.length).toBeGreaterThan(0)
+    // The claim is behavioural and checkable, derived from 32M purchases —
+    // not a static catalogue discount presented as a live offer.
+    for (const staple of staples) {
+      expect(staple.reorderRate).toBeGreaterThan(0.4)
+      expect(staple.reason).toMatch(/buy this again/)
+    }
+  })
+
+  it('never presents a catalogue discount as the reason for a suggestion', () => {
+    // An earlier version led with "51% off the usual price" — a 2020 price
+    // snapshot dressed as a promotion, identical for every visitor.
+    const results = suggest({ items: [], history: {}, now: NOW, limit: 6 })
+    for (const suggestion of results) {
+      expect(suggestion.reason).not.toMatch(/%\s*off/i)
+    }
   })
 })
 
@@ -106,7 +126,7 @@ describe('suggestions never assert more than the data supports', () => {
     // are not. Complements were removed rather than shipped in that state.
     const results = suggest({ items: [item('milk', 'dairy')], history: {}, now: NOW, limit: 8 })
     expect(results.map((s) => s.canonicalId)).not.toContain('pork')
-    expect(results.every((s) => s.kind === 'replenishment' || s.kind === 'deal')).toBe(true)
+    expect(results.every((s) => s.kind === 'replenishment' || s.kind === 'staple')).toBe(true)
   })
 })
 

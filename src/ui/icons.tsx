@@ -133,6 +133,23 @@ export function DeviceIcon({ size = 24, className }: IconProps) {
   )
 }
 
+export function ClockIcon({ size = 24, className }: IconProps) {
+  return (
+    <svg {...base(size, className)}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3.5 2" />
+    </svg>
+  )
+}
+
+export function RepeatIcon({ size = 24, className }: IconProps) {
+  return (
+    <svg {...base(size, className)}>
+      <path d="M4 9a5 5 0 0 1 5-5h10l-3-3M20 15a5 5 0 0 1-5 5H5l3 3" />
+    </svg>
+  )
+}
+
 /**
  * Listening indicator.
  *

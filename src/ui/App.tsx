@@ -25,6 +25,7 @@ import type { SpeechPort } from '../ports/speech'
 import type { StoragePort } from '../ports/storage'
 import type { CatalogPort } from '../ports/catalog'
 import type { LlmPort } from '../ports/llm'
+import { Suggestions } from './Suggestions'
 import {
   AlertIcon,
   CloseIcon,
@@ -134,6 +135,7 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
         </label>
       </header>
 
+      <div className="layout">
       <main className="list" aria-label="Shopping list">
         {total === 0 ? (
           <div className="empty">
@@ -184,7 +186,10 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
                         <span className="quantity">{formatQuantity(item.quantity)}</span>
                       ) : null}
                       {item.confidence < 0.6 ? (
-                        <span className="uncertain" title="Not sure I heard this right">?</span>
+                        <span className="uncertain" title="I wasn't sure I heard this correctly — check the name">
+                          <AlertIcon size={13} />
+                          <span className="visually-hidden">Unconfirmed — check this name</span>
+                        </span>
                       ) : null}
                     </label>
                     <button
@@ -207,6 +212,50 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
           ))
         )}
 
+      </main>
+
+      <aside className="side" aria-label="Assistant">
+      <footer className="dock">
+        {/* Announced politely so screen-reader users get the same real-time
+            feedback sighted users get from watching it appear. */}
+        <div className={`transcript${listening ? ' listening' : ''}`} aria-live="polite">
+          {listening ? <Waveform active level={list.audioLevel} /> : null}
+          <span className="text">
+            {list.interimTranscript !== ''
+              ? `“${list.interimTranscript}”`
+              : listening
+                ? 'Listening…'
+                : null}
+          </span>
+        </div>
+
+        <div className="dock-row">
+          <form className="composer" onSubmit={onSubmit}>
+            <input
+              type="text"
+              value={draft}
+              placeholder="Type an item…"
+              aria-label="Type a command"
+              enterKeyHint="done"
+              onChange={(event) => setDraft(event.target.value)}
+            />
+            <button type="submit" className="send" aria-label="Add" disabled={draft.trim() === ''}>
+              <PlusIcon size={20} />
+            </button>
+          </form>
+
+          <button
+            type="button"
+            className={`mic ${list.micState}`}
+            aria-label={MIC_LABEL[list.micState]}
+            aria-pressed={listening}
+            disabled={!list.supported}
+            onClick={() => (listening ? list.stopListening() : list.listen())}
+          >
+            {listening ? <StopIcon size={22} /> : <MicIcon size={24} />}
+          </button>
+        </div>
+      </footer>
         {/* The agent proposes; it never applies its own work. Nothing is added
             until this is accepted. */}
         {list.agent.thinking || list.agent.proposal !== null || list.agent.failed ? (
@@ -340,47 +389,22 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
           </section>
         ) : null}
 
-        {list.suggestions.length > 0 ? (
-          <section className="panel" aria-label="Suggestions">
-            <div className="panel-head">
-              <SparkIcon size={17} />
-              <h2>You might need</h2>
-            </div>
-            <div className="panel-body">
-              <ul>
-                {list.suggestions.map((suggestion) => (
-                  <li key={suggestion.canonicalId}>
-                    <button
-                      type="button"
-                      className="row-button"
-                      onClick={() =>
-                        list.dispatch({
-                          kind: 'add',
-                          item: {
-                            name: suggestion.name,
-                            canonicalId: suggestion.canonicalId,
-                            quantity: { value: 1, unit: 'piece' },
-                            category: suggestion.category,
-                            confidence: 1,
-                          },
-                          source: 'suggestion',
-                        })
-                      }
-                    >
-                      <div className="row-text">
-                        <span className="row-title">{suggestion.name}</span>
-                        {/* Every suggestion states why it is here. An unexplained
-                            one reads as the app guessing at you. */}
-                        <span className="row-sub">{suggestion.reason}</span>
-                      </div>
-                      <span className="row-add"><PlusIcon size={15} /></span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-        ) : null}
+        <Suggestions
+          suggestions={list.suggestions}
+          onAdd={(suggestion) =>
+            list.dispatch({
+              kind: 'add',
+              item: {
+                name: suggestion.name,
+                canonicalId: suggestion.canonicalId,
+                quantity: { value: 1, unit: 'piece' },
+                category: suggestion.category,
+                confidence: 1,
+              },
+              source: 'suggestion',
+            })
+          }
+        />
 
         <div className="notices">
           {!list.supported ? (
@@ -403,7 +427,8 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
             </p>
           ) : null}
         </div>
-      </main>
+      </aside>
+      </div>
 
       <div className="toasts" aria-live="polite">
         {list.toasts.map((toast) => (
@@ -433,47 +458,6 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
         ))}
       </div>
 
-      <footer className="dock">
-        {/* Announced politely so screen-reader users get the same real-time
-            feedback sighted users get from watching it appear. */}
-        <div className={`transcript${listening ? ' listening' : ''}`} aria-live="polite">
-          {listening ? <Waveform active level={list.audioLevel} /> : null}
-          <span className="text">
-            {list.interimTranscript !== ''
-              ? `“${list.interimTranscript}”`
-              : listening
-                ? 'Listening…'
-                : null}
-          </span>
-        </div>
-
-        <div className="dock-row">
-          <form className="composer" onSubmit={onSubmit}>
-            <input
-              type="text"
-              value={draft}
-              placeholder="Type an item…"
-              aria-label="Type a command"
-              enterKeyHint="done"
-              onChange={(event) => setDraft(event.target.value)}
-            />
-            <button type="submit" className="send" aria-label="Add" disabled={draft.trim() === ''}>
-              <PlusIcon size={20} />
-            </button>
-          </form>
-
-          <button
-            type="button"
-            className={`mic ${list.micState}`}
-            aria-label={MIC_LABEL[list.micState]}
-            aria-pressed={listening}
-            disabled={!list.supported}
-            onClick={() => (listening ? list.stopListening() : list.listen())}
-          >
-            {listening ? <StopIcon size={22} /> : <MicIcon size={24} />}
-          </button>
-        </div>
-      </footer>
     </div>
   )
 }

@@ -497,6 +497,9 @@ body {
 
 /* Live transcript sits directly above the mic, where the eye already is. */
 .transcript {
+  /* Reserved so the dock does not jump when a transcript appears mid-utterance.
+     Collapsed when idle on desktop, where the dock is a panel rather than a bar
+     pinned to the bottom and the reserved strip reads as dead space. */
   min-height: 1.75rem;
   margin-bottom: 0.5rem;
   text-align: center;
@@ -634,4 +637,161 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* ================================================ responsive two-column
+ *
+ * Below 900px this is a single column with a fixed dock, which is right for a
+ * phone. Above it, that same column centred in a 1920px window reads as a phone
+ * screenshot pasted onto a desktop — so the assistant moves into its own
+ * sticky column and the dock stops floating.
+ */
+
+.layout { display: block; }
+
+/* On mobile the assistant column is not a column at all: its children flow
+   inline with the list, and the dock inside it is pinned to the viewport. */
+.side { display: contents; }
+
+@media (min-width: 900px) {
+  .app {
+    max-width: 68rem;
+    padding-bottom: 2rem;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .side {
+    display: block;
+    position: sticky;
+    /* Clears the header without hiding the top of the panel. */
+    top: 1rem;
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    /* The scrollbar sits inside the column rather than against the viewport. */
+    scrollbar-width: thin;
+  }
+
+  /* The dock becomes the top of the assistant column instead of a floating bar
+     stranded in the middle of a wide screen. */
+  .dock:not(:has(.transcript .text:not(:empty))) .transcript { min-height: 0; margin-bottom: 0; }
+
+  .dock {
+    position: static;
+    transform: none;
+    width: auto;
+    margin-bottom: 1.25rem;
+    padding: 0.875rem;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: none;
+  }
+
+  .toasts {
+    left: auto;
+    right: 1.5rem;
+    transform: none;
+    bottom: 1.5rem;
+    width: min(24rem, calc(100% - 3rem));
+  }
+
+  .empty { padding-top: 3rem; }
+  .examples { grid-template-columns: 1fr 1fr; display: grid; }
+}
+
+@media (min-width: 1280px) {
+  .app { max-width: 76rem; }
+  .layout { grid-template-columns: minmax(0, 1fr) 24rem; gap: 2rem; }
+  /* Two list columns once one would otherwise run absurdly wide. */
+  .list { columns: 2; column-gap: 1.5rem; }
+  .group { break-inside: avoid; }
+}
+
+/* ========================================================== suggestions */
+
+.panel-hint {
+  margin: 0;
+  padding: 0 0.875rem 0.5rem;
+  font-size: 0.75rem;
+  color: var(--faint);
+  border-bottom: 1px solid var(--border);
+}
+
+.suggestion {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'main add'
+    'cycle add'
+    'sub add';
+  gap: 0.3rem 0.75rem;
+  align-items: center;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  background: var(--surface-sunk);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms var(--ease), background 160ms var(--ease);
+}
+
+.suggestion:hover { border-color: var(--primary); background: var(--surface); }
+.suggestion-main { grid-area: main; display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+.suggestion-dot { width: 0.5rem; height: 0.5rem; border-radius: var(--r-full); flex-shrink: 0; }
+.suggestion-price { margin-left: auto; font-size: 0.8125rem; font-variant-numeric: tabular-nums; color: var(--muted); }
+.suggestion .row-sub { grid-area: sub; }
+.suggestion .row-add { grid-area: add; }
+.often-cheaper { color: var(--faint); }
+
+/* Elapsed time against the modelled purchase cycle. The marker is where the
+   posterior expects the next purchase; the fill is how far past it you are. */
+.cycle {
+  grid-area: cycle;
+  position: relative;
+  display: block;
+  height: 4px;
+  border-radius: var(--r-full);
+  background: var(--border);
+  overflow: visible;
+}
+
+.cycle-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: var(--r-full);
+  background: var(--primary);
+  transition: width 400ms var(--ease);
+}
+
+.cycle-fill.is-overdue { background: var(--warm); }
+
+.cycle-marker {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 10px;
+  border-radius: var(--r-full);
+  background: var(--muted);
+  opacity: 0.55;
+}
+
+/* The uncertainty badge was a bare "?" glyph, which read as a broken icon. */
+.uncertain {
+  flex-shrink: 0;
+  width: 1.35rem; height: 1.35rem;
+  display: grid; place-items: center;
+  border-radius: var(--r-full);
+  background: color-mix(in srgb, var(--warm) 18%, transparent);
+  color: var(--warm);
+  cursor: help;
 }

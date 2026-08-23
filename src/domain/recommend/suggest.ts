@@ -28,11 +28,22 @@ interface GammaPrior {
 const priors = priorsData as unknown as {
   _source: string
   replenishment: Readonly<Record<string, GammaPrior>>
+  /** head -> share of purchases that were repeat purchases, from 32M rows. */
+  reorderRates: ReadonlyArray<{ head: string; rate: number; purchases: number }>
 }
+
+/**
+ * How often someone who buys an item buys it again.
+ *
+ * The only behavioural signal available to a shopper with no history of their
+ * own. It sanity-checks well at both ends: whole wheat bread is rebought 72.9%
+ * of the time across 107k purchases, birthday candles 4.3%.
+ */
+const REORDER = new Map(priors.reorderRates.map((entry) => [entry.head, entry]))
 
 export const PRIORS_SOURCE = priors._source
 
-export type SuggestionKind = 'replenishment' | 'deal'
+export type SuggestionKind = 'replenishment' | 'staple'
 
 export interface Suggestion {
   readonly canonicalId: string
@@ -43,6 +54,42 @@ export interface Suggestion {
   readonly score: number
   /** Shown verbatim in the UI. */
   readonly reason: string
+  /**
+   * The evidence behind a replenishment suggestion, so the interface can draw
+   * the model rather than only quote it.
+   *
+   * A sentence — "you buy this about every 9 days, it's been 12" — has to be
+   * read and held in mind before it means anything. A bar past a marker is
+   * grasped at a glance, and it is the same number either way. Absent for
+   * deals, which have no cycle.
+   */
+  readonly cycle?: {
+    /** Posterior mean interval between purchases, in days. */
+    readonly expectedDays: number
+    readonly daysSince: number
+    /** Probability the item is used up by now, [0,1]. */
+    readonly due: number
+  }
+  /** What the shopper usually buys, so the row can offer that rather than "1". */
+  readonly usualQuantity?: { readonly value: number; readonly unit: string }
+  /** Rupee price where the catalogue knows one. */
+  readonly priceInr?: number
+  /**
+   * Share of purchases of this item that were repeat purchases, [0,1].
+   *
+   * Present on staple suggestions, which is what they are ranked by.
+   */
+  readonly reorderRate?: number
+  /**
+   * A catalogue property, NOT a live offer.
+   *
+   * BigBasket's marked price against its selling price, from a static 2020
+   * snapshot. It is shown as a secondary badge and never as the reason a thing
+   * is being suggested — an earlier version led with "51% off the usual price",
+   * which reads as a promotion happening right now and is identical for every
+   * user. That is a catalogue filter dressed as a recommendation.
+   */
+  readonly usuallyDiscounted?: number
 }
 
 /** Purchase timestamps per item, most recent last. */
@@ -130,7 +177,13 @@ function replenishmentSuggestions(options: SuggestOptions, onList: ReadonlySet<s
       category: entry.category,
       kind: 'replenishment',
       score: probability,
-      reason: `You buy this about every ${formatDays(1 / rate)} — it's been ${formatDays(daysSince)}`,
+      reason: `Usually every ${formatDays(1 / rate)} · last bought ${formatDays(daysSince)} ago`,
+      cycle: {
+        expectedDays: Number((1 / rate).toFixed(1)),
+        daysSince: Number(daysSince.toFixed(1)),
+        due: Number(probability.toFixed(3)),
+      },
+      priceInr: entry.medianPriceInr ?? undefined,
     })
   }
 
@@ -151,44 +204,67 @@ function replenishmentSuggestions(options: SuggestOptions, onList: ReadonlySet<s
  * noise. Deriving it properly is the obvious next step and is noted in the README
  * as an acknowledged gap.
  *
- * Replenishment and deals remain: both make claims the data actually supports.
+ * Replenishment and staples remain: both make claims the data supports.
  */
 
 /**
  * Categories a grocery list is actually about.
  *
- * Deals are the only suggestion available to a brand-new user with an empty
- * list, so they are the first thing anyone sees. Ranking purely by discount put
- * perfume and facial kits at the top, because non-food lines are discounted
- * hardest. Food is weighted ahead of them rather than excluded — soap and
- * toothpaste belong on a shopping list too, just not above the bread.
+ * Staples fill the gap for a shopper with no history, so they are the first
+ * thing anyone sees. Food is weighted ahead of the rest — soap and toothpaste
+ * belong on a shopping list too, just not above the bread.
  */
 const FOOD_CATEGORIES = new Set<Category>([
   'produce', 'dairy', 'bakery', 'meat', 'pantry', 'frozen', 'beverages', 'snacks',
 ])
 
-function dealSuggestions(onList: ReadonlySet<string>): Suggestion[] {
-  const weight = (entry: LexiconEntry): number =>
-    entry.discount * entry.prior * (FOOD_CATEGORIES.has(entry.category) ? 1 : 0.35)
+/** Below this, an item is an occasional purchase rather than something restocked. */
+const STAPLE_FLOOR = 0.45
 
-  return LEXICON.filter((entry) => entry.discount >= 0.3 && !onList.has(entry.canonicalId))
-    .sort((a, b) => weight(b) - weight(a))
-    .slice(0, 3)
-    .map((entry) => ({
+/**
+ * Items most people buy again, that this shopper does not have.
+ *
+ * Replaces a "deals" list built from catalogue discounts. Those were real
+ * dataset fields but made a false claim: a static price snapshot presented as a
+ * live offer, identical for every visitor, with nothing about the shopper in it.
+ * A reorder rate is a statement about behaviour — 32M purchase decisions — and
+ * it is checkable.
+ */
+function stapleSuggestions(options: SuggestOptions, onList: ReadonlySet<string>): Suggestion[] {
+  // Bias toward aisles this shopper is already buying from, so the list reads as
+  // related to what they are doing rather than as a generic top-sellers rail.
+  const present = new Set(options.items.map((item) => item.category))
+
+  return LEXICON.filter((entry) => {
+    if (onList.has(entry.canonicalId)) return false
+    const reorder = REORDER.get(entry.canonicalId.replace(/-/g, ' '))
+    return reorder !== undefined && reorder.rate >= STAPLE_FLOOR
+  })
+    .map((entry) => {
+      const reorder = REORDER.get(entry.canonicalId.replace(/-/g, ' '))!
+      const relevance = present.size === 0 || present.has(entry.category) ? 1 : 0.6
+      const food = FOOD_CATEGORIES.has(entry.category) ? 1 : 0.45
+      return { entry, reorder, weight: reorder.rate * entry.prior * relevance * food }
+    })
+    .sort((a, b) => b.weight - a.weight)
+    .slice(0, 4)
+    .map(({ entry, reorder }) => ({
       canonicalId: entry.canonicalId,
       name: entry.name,
       category: entry.category,
-      kind: 'deal' as const,
-      score: entry.discount * 0.6,
-      reason: `${Math.round(entry.discount * 100)}% off the usual price`,
+      kind: 'staple' as const,
+      score: reorder.rate * 0.7,
+      reason: `${Math.round(reorder.rate * 100)}% of shoppers buy this again`,
+      reorderRate: reorder.rate,
+      priceInr: entry.medianPriceInr ?? undefined,
+      usuallyDiscounted: entry.discount > 0.15 ? entry.discount : undefined,
     }))
 }
-
 
 export function suggest(options: SuggestOptions): Suggestion[] {
   const onList = new Set(options.items.map((item) => item.canonicalId))
 
-  const all = [...replenishmentSuggestions(options, onList), ...dealSuggestions(onList)]
+  const all = [...replenishmentSuggestions(options, onList), ...stapleSuggestions(options, onList)]
 
   // One suggestion per item, keeping the strongest reason for it.
   const best = new Map<string, Suggestion>()
@@ -197,7 +273,26 @@ export function suggest(options: SuggestOptions): Suggestion[] {
     if (existing === undefined || suggestion.score > existing.score) best.set(suggestion.canonicalId, suggestion)
   }
 
-  return [...best.values()].sort((a, b) => b.score - a.score).slice(0, options.limit ?? 4)
+  /*
+   * Balanced rather than purely ranked.
+   *
+   * Replenishment and staples answer different questions — "what am I about to
+   * run out of" and "what do people like me keep buying" — and a single sorted
+   * list lets one bury the other. Each kind keeps a guaranteed share, and
+   * whichever has more to say fills the remainder.
+   */
+  const limit = options.limit ?? 6
+  const ranked = [...best.values()].sort((a, b) => b.score - a.score)
+  const overdue = ranked.filter((s) => s.kind === 'replenishment')
+  const staples = ranked.filter((s) => s.kind === 'staple')
+
+  const reserved = Math.min(2, staples.length)
+  const picked = [...overdue.slice(0, limit - reserved), ...staples.slice(0, reserved)]
+  for (const suggestion of ranked) {
+    if (picked.length >= limit) break
+    if (!picked.includes(suggestion)) picked.push(suggestion)
+  }
+  return picked.slice(0, limit)
 }
 
 /**

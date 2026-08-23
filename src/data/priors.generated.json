@@ -328,5 +328,2782 @@
       "lift": 1.1077,
       "support": 36781
     }
+  ],
+  "reorderRates": [
+    {
+      "head": "banana",
+      "rate": 0.8307,
+      "purchases": 492459
+    },
+    {
+      "head": "cranberry kombucha",
+      "rate": 0.7542,
+      "purchases": 297
+    },
+    {
+      "head": "mineral water",
+      "rate": 0.7538,
+      "purchases": 129615
+    },
+    {
+      "head": "milk",
+      "rate": 0.7318,
+      "purchases": 481825
+    },
+    {
+      "head": "whole wheat bread",
+      "rate": 0.7291,
+      "purchases": 107176
+    },
+    {
+      "head": "free range egg",
+      "rate": 0.7198,
+      "purchases": 2470
+    },
+    {
+      "head": "sparkling water",
+      "rate": 0.7183,
+      "purchases": 342258
+    },
+    {
+      "head": "soy milk",
+      "rate": 0.7161,
+      "purchases": 15073
+    },
+    {
+      "head": "energy drink",
+      "rate": 0.7096,
+      "purchases": 20026
+    },
+    {
+      "head": "almond milk",
+      "rate": 0.709,
+      "purchases": 317130
+    },
+    {
+      "head": "chocolate milk",
+      "rate": 0.7006,
+      "purchases": 37010
+    },
+    {
+      "head": "coconut water",
+      "rate": 0.7001,
+      "purchases": 106502
+    },
+    {
+      "head": "soda",
+      "rate": 0.7,
+      "purchases": 85220
+    },
+    {
+      "head": "essence",
+      "rate": 0.6944,
+      "purchases": 3557
+    },
+    {
+      "head": "guava",
+      "rate": 0.6915,
+      "purchases": 5957
+    },
+    {
+      "head": "hazelnut coffee",
+      "rate": 0.6909,
+      "purchases": 1812
+    },
+    {
+      "head": "drink",
+      "rate": 0.6893,
+      "purchases": 37416
+    },
+    {
+      "head": "corn chip",
+      "rate": 0.6893,
+      "purchases": 13124
+    },
+    {
+      "head": "trail mix",
+      "rate": 0.6777,
+      "purchases": 23513
+    },
+    {
+      "head": "soft drink",
+      "rate": 0.6717,
+      "purchases": 7490
+    },
+    {
+      "head": "multigrain bread",
+      "rate": 0.6704,
+      "purchases": 7361
+    },
+    {
+      "head": "cucumber",
+      "rate": 0.6648,
+      "purchases": 141265
+    },
+    {
+      "head": "coffee creamer",
+      "rate": 0.6632,
+      "purchases": 33646
+    },
+    {
+      "head": "cut cauliflower",
+      "rate": 0.6608,
+      "purchases": 908
+    },
+    {
+      "head": "apple",
+      "rate": 0.6597,
+      "purchases": 305505
+    },
+    {
+      "head": "greek yogurt",
+      "rate": 0.6593,
+      "purchases": 322037
+    },
+    {
+      "head": "blueberry",
+      "rate": 0.658,
+      "purchases": 181960
+    },
+    {
+      "head": "milk shake",
+      "rate": 0.6543,
+      "purchases": 995
+    },
+    {
+      "head": "curd",
+      "rate": 0.6528,
+      "purchases": 16186
+    },
+    {
+      "head": "cold pressed",
+      "rate": 0.6519,
+      "purchases": 41426
+    },
+    {
+      "head": "original kombucha",
+      "rate": 0.6506,
+      "purchases": 1966
+    },
+    {
+      "head": "avocado",
+      "rate": 0.6501,
+      "purchases": 89088
+    },
+    {
+      "head": "cold brew coffee",
+      "rate": 0.6494,
+      "purchases": 25710
+    },
+    {
+      "head": "shot",
+      "rate": 0.6455,
+      "purchases": 2017
+    },
+    {
+      "head": "organic",
+      "rate": 0.6443,
+      "purchases": 8805903
+    },
+    {
+      "head": "quinoa chip",
+      "rate": 0.6399,
+      "purchases": 1333
+    },
+    {
+      "head": "lemon",
+      "rate": 0.6389,
+      "purchases": 310437
+    },
+    {
+      "head": "vanilla bean",
+      "rate": 0.6388,
+      "purchases": 28369
+    },
+    {
+      "head": "popcorn",
+      "rate": 0.6359,
+      "purchases": 28706
+    },
+    {
+      "head": "grape",
+      "rate": 0.6342,
+      "purchases": 93464
+    },
+    {
+      "head": "peach",
+      "rate": 0.6336,
+      "purchases": 92170
+    },
+    {
+      "head": "hummus",
+      "rate": 0.6329,
+      "purchases": 28514
+    },
+    {
+      "head": "snack bar",
+      "rate": 0.6326,
+      "purchases": 6361
+    },
+    {
+      "head": "oat",
+      "rate": 0.6322,
+      "purchases": 21349
+    },
+    {
+      "head": "energy",
+      "rate": 0.6321,
+      "purchases": 7325
+    },
+    {
+      "head": "salami",
+      "rate": 0.6302,
+      "purchases": 56151
+    },
+    {
+      "head": "muesli",
+      "rate": 0.6285,
+      "purchases": 5429
+    },
+    {
+      "head": "pulp",
+      "rate": 0.6266,
+      "purchases": 47854
+    },
+    {
+      "head": "cashew butter",
+      "rate": 0.6229,
+      "purchases": 2344
+    },
+    {
+      "head": "watermelon",
+      "rate": 0.6199,
+      "purchases": 63107
+    },
+    {
+      "head": "nutella",
+      "rate": 0.6194,
+      "purchases": 1114
+    },
+    {
+      "head": "nacho chip",
+      "rate": 0.6185,
+      "purchases": 1696
+    },
+    {
+      "head": "strawberry",
+      "rate": 0.6168,
+      "purchases": 216119
+    },
+    {
+      "head": "chip",
+      "rate": 0.6138,
+      "purchases": 2600
+    },
+    {
+      "head": "ground coffee",
+      "rate": 0.6134,
+      "purchases": 51710
+    },
+    {
+      "head": "fiber bar",
+      "rate": 0.6124,
+      "purchases": 5242
+    },
+    {
+      "head": "lentil chip",
+      "rate": 0.6119,
+      "purchases": 1363
+    },
+    {
+      "head": "fruit juice",
+      "rate": 0.6116,
+      "purchases": 44536
+    },
+    {
+      "head": "bread",
+      "rate": 0.6116,
+      "purchases": 215258
+    },
+    {
+      "head": "orange",
+      "rate": 0.6114,
+      "purchases": 184810
+    },
+    {
+      "head": "coffee",
+      "rate": 0.6111,
+      "purchases": 60604
+    },
+    {
+      "head": "gluten",
+      "rate": 0.6087,
+      "purchases": 4817
+    },
+    {
+      "head": "snack stick",
+      "rate": 0.6078,
+      "purchases": 1948
+    },
+    {
+      "head": "cherry",
+      "rate": 0.6071,
+      "purchases": 79561
+    },
+    {
+      "head": "pizza cheese",
+      "rate": 0.6069,
+      "purchases": 5294
+    },
+    {
+      "head": "berry",
+      "rate": 0.6068,
+      "purchases": 77120
+    },
+    {
+      "head": "raisin",
+      "rate": 0.6067,
+      "purchases": 25458
+    },
+    {
+      "head": "asparagus",
+      "rate": 0.6063,
+      "purchases": 78411
+    },
+    {
+      "head": "tea",
+      "rate": 0.6061,
+      "purchases": 50863
+    },
+    {
+      "head": "belgian style",
+      "rate": 0.6051,
+      "purchases": 1813
+    },
+    {
+      "head": "swiss roll",
+      "rate": 0.6051,
+      "purchases": 1056
+    },
+    {
+      "head": "ham",
+      "rate": 0.5981,
+      "purchases": 41898
+    },
+    {
+      "head": "wheat",
+      "rate": 0.5974,
+      "purchases": 140283
+    },
+    {
+      "head": "energy bar",
+      "rate": 0.5959,
+      "purchases": 20641
+    },
+    {
+      "head": "cheddar cheese",
+      "rate": 0.5926,
+      "purchases": 205275
+    },
+    {
+      "head": "broad bean",
+      "rate": 0.5923,
+      "purchases": 233
+    },
+    {
+      "head": "lavash",
+      "rate": 0.5913,
+      "purchases": 2016
+    },
+    {
+      "head": "broccoli",
+      "rate": 0.5905,
+      "purchases": 121241
+    },
+    {
+      "head": "pomelo",
+      "rate": 0.5902,
+      "purchases": 7775
+    },
+    {
+      "head": "cheese cracker",
+      "rate": 0.5893,
+      "purchases": 3884
+    },
+    {
+      "head": "potato chip",
+      "rate": 0.589,
+      "purchases": 132536
+    },
+    {
+      "head": "butter",
+      "rate": 0.5881,
+      "purchases": 129159
+    },
+    {
+      "head": "protein bar",
+      "rate": 0.5877,
+      "purchases": 33120
+    },
+    {
+      "head": "dark chocolate",
+      "rate": 0.5857,
+      "purchases": 181273
+    },
+    {
+      "head": "pink",
+      "rate": 0.5857,
+      "purchases": 32446
+    },
+    {
+      "head": "cheddar",
+      "rate": 0.5847,
+      "purchases": 183285
+    },
+    {
+      "head": "french",
+      "rate": 0.5844,
+      "purchases": 106234
+    },
+    {
+      "head": "ginger ale",
+      "rate": 0.5841,
+      "purchases": 35829
+    },
+    {
+      "head": "salted butter",
+      "rate": 0.5837,
+      "purchases": 46378
+    },
+    {
+      "head": "treat",
+      "rate": 0.5821,
+      "purchases": 981
+    },
+    {
+      "head": "ginger lemon kombucha",
+      "rate": 0.5814,
+      "purchases": 3039
+    },
+    {
+      "head": "original",
+      "rate": 0.5807,
+      "purchases": 638821
+    },
+    {
+      "head": "frappuccino",
+      "rate": 0.579,
+      "purchases": 1803
+    },
+    {
+      "head": "multigrain chip",
+      "rate": 0.5786,
+      "purchases": 6044
+    },
+    {
+      "head": "beer",
+      "rate": 0.5773,
+      "purchases": 32584
+    },
+    {
+      "head": "snack pack",
+      "rate": 0.5772,
+      "purchases": 23892
+    },
+    {
+      "head": "sliced black olive",
+      "rate": 0.5765,
+      "purchases": 10962
+    },
+    {
+      "head": "cheese slice",
+      "rate": 0.5757,
+      "purchases": 38611
+    },
+    {
+      "head": "sweet potato",
+      "rate": 0.5755,
+      "purchases": 129851
+    },
+    {
+      "head": "cheese popcorn",
+      "rate": 0.5755,
+      "purchases": 4806
+    },
+    {
+      "head": "chicken nugget",
+      "rate": 0.5754,
+      "purchases": 30787
+    },
+    {
+      "head": "cheese block",
+      "rate": 0.5752,
+      "purchases": 14214
+    },
+    {
+      "head": "fig",
+      "rate": 0.5751,
+      "purchases": 12453
+    },
+    {
+      "head": "food",
+      "rate": 0.5747,
+      "purchases": 66403
+    },
+    {
+      "head": "olive",
+      "rate": 0.5747,
+      "purchases": 7327
+    },
+    {
+      "head": "tortilla chip",
+      "rate": 0.5746,
+      "purchases": 162356
+    },
+    {
+      "head": "dairy milk",
+      "rate": 0.5732,
+      "purchases": 820
+    },
+    {
+      "head": "baby wipe",
+      "rate": 0.5726,
+      "purchases": 16387
+    },
+    {
+      "head": "tofu",
+      "rate": 0.5721,
+      "purchases": 25518
+    },
+    {
+      "head": "macaroni",
+      "rate": 0.5718,
+      "purchases": 55837
+    },
+    {
+      "head": "cream cheese",
+      "rate": 0.5709,
+      "purchases": 96420
+    },
+    {
+      "head": "salted almond",
+      "rate": 0.5702,
+      "purchases": 12599
+    },
+    {
+      "head": "tomato",
+      "rate": 0.5697,
+      "purchases": 171060
+    },
+    {
+      "head": "peanut butter",
+      "rate": 0.5694,
+      "purchases": 290480
+    },
+    {
+      "head": "paneer",
+      "rate": 0.5691,
+      "purchases": 6918
+    },
+    {
+      "head": "milk drink",
+      "rate": 0.5688,
+      "purchases": 3117
+    },
+    {
+      "head": "honey",
+      "rate": 0.5683,
+      "purchases": 182475
+    },
+    {
+      "head": "roasted",
+      "rate": 0.5678,
+      "purchases": 192930
+    },
+    {
+      "head": "natural",
+      "rate": 0.5675,
+      "purchases": 354131
+    },
+    {
+      "head": "quinoa puff",
+      "rate": 0.5674,
+      "purchases": 1736
+    },
+    {
+      "head": "almond coconut",
+      "rate": 0.566,
+      "purchases": 3606
+    },
+    {
+      "head": "chicken",
+      "rate": 0.5646,
+      "purchases": 402377
+    },
+    {
+      "head": "cereal",
+      "rate": 0.5641,
+      "purchases": 72822
+    },
+    {
+      "head": "gluten free",
+      "rate": 0.5638,
+      "purchases": 405942
+    },
+    {
+      "head": "chocolate",
+      "rate": 0.5635,
+      "purchases": 201327
+    },
+    {
+      "head": "instant oat",
+      "rate": 0.5632,
+      "purchases": 29388
+    },
+    {
+      "head": "mango",
+      "rate": 0.5622,
+      "purchases": 90996
+    },
+    {
+      "head": "cream wafer",
+      "rate": 0.5622,
+      "purchases": 715
+    },
+    {
+      "head": "coconut",
+      "rate": 0.5621,
+      "purchases": 88417
+    },
+    {
+      "head": "pineapple",
+      "rate": 0.5614,
+      "purchases": 67700
+    },
+    {
+      "head": "milk chocolate",
+      "rate": 0.5614,
+      "purchases": 56554
+    },
+    {
+      "head": "chocolate bar",
+      "rate": 0.5608,
+      "purchases": 25264
+    },
+    {
+      "head": "passion fruit",
+      "rate": 0.5607,
+      "purchases": 5630
+    },
+    {
+      "head": "prune",
+      "rate": 0.5607,
+      "purchases": 1384
+    },
+    {
+      "head": "almond",
+      "rate": 0.5597,
+      "purchases": 48895
+    },
+    {
+      "head": "green chilly",
+      "rate": 0.5592,
+      "purchases": 211
+    },
+    {
+      "head": "fusilli",
+      "rate": 0.5589,
+      "purchases": 7549
+    },
+    {
+      "head": "frozen",
+      "rate": 0.5586,
+      "purchases": 106251
+    },
+    {
+      "head": "papaya",
+      "rate": 0.5584,
+      "purchases": 3632
+    },
+    {
+      "head": "cheese spread",
+      "rate": 0.5577,
+      "purchases": 31256
+    },
+    {
+      "head": "green tea",
+      "rate": 0.5574,
+      "purchases": 61964
+    },
+    {
+      "head": "unsalted butter",
+      "rate": 0.5562,
+      "purchases": 66295
+    },
+    {
+      "head": "cream",
+      "rate": 0.5559,
+      "purchases": 100452
+    },
+    {
+      "head": "dark",
+      "rate": 0.5557,
+      "purchases": 27226
+    },
+    {
+      "head": "mozzarella",
+      "rate": 0.5554,
+      "purchases": 72072
+    },
+    {
+      "head": "cashew",
+      "rate": 0.5552,
+      "purchases": 10222
+    },
+    {
+      "head": "fruit",
+      "rate": 0.5551,
+      "purchases": 99519
+    },
+    {
+      "head": "oatmeal",
+      "rate": 0.5551,
+      "purchases": 27873
+    },
+    {
+      "head": "bean",
+      "rate": 0.5543,
+      "purchases": 54637
+    },
+    {
+      "head": "original recipe",
+      "rate": 0.5539,
+      "purchases": 17401
+    },
+    {
+      "head": "palak",
+      "rate": 0.5537,
+      "purchases": 1210
+    },
+    {
+      "head": "spinach",
+      "rate": 0.5532,
+      "purchases": 144783
+    },
+    {
+      "head": "vegetable juice",
+      "rate": 0.5532,
+      "purchases": 7690
+    },
+    {
+      "head": "lettuce",
+      "rate": 0.5515,
+      "purchases": 51742
+    },
+    {
+      "head": "kiwi",
+      "rate": 0.5513,
+      "purchases": 18437
+    },
+    {
+      "head": "almond flour",
+      "rate": 0.5511,
+      "purchases": 5758
+    },
+    {
+      "head": "chickpea",
+      "rate": 0.5509,
+      "purchases": 1728
+    },
+    {
+      "head": "coconut milk yogurt",
+      "rate": 0.5505,
+      "purchases": 6907
+    },
+    {
+      "head": "coconut milk",
+      "rate": 0.5502,
+      "purchases": 120702
+    },
+    {
+      "head": "almond butter",
+      "rate": 0.5492,
+      "purchases": 73416
+    },
+    {
+      "head": "berry mix",
+      "rate": 0.5491,
+      "purchases": 621
+    },
+    {
+      "head": "crunchy granola bar",
+      "rate": 0.5484,
+      "purchases": 1342
+    },
+    {
+      "head": "juice",
+      "rate": 0.5481,
+      "purchases": 61754
+    },
+    {
+      "head": "fruit drink",
+      "rate": 0.5478,
+      "purchases": 1068
+    },
+    {
+      "head": "potato crisp",
+      "rate": 0.5476,
+      "purchases": 9087
+    },
+    {
+      "head": "cinnamon",
+      "rate": 0.547,
+      "purchases": 81586
+    },
+    {
+      "head": "cranberry",
+      "rate": 0.5465,
+      "purchases": 32590
+    },
+    {
+      "head": "sausage",
+      "rate": 0.5452,
+      "purchases": 60283
+    },
+    {
+      "head": "pomegranate",
+      "rate": 0.5439,
+      "purchases": 43172
+    },
+    {
+      "head": "spread",
+      "rate": 0.5438,
+      "purchases": 8399
+    },
+    {
+      "head": "granola",
+      "rate": 0.5433,
+      "purchases": 19177
+    },
+    {
+      "head": "classic hummus",
+      "rate": 0.5432,
+      "purchases": 21494
+    },
+    {
+      "head": "roll",
+      "rate": 0.5429,
+      "purchases": 31095
+    },
+    {
+      "head": "cheese",
+      "rate": 0.5421,
+      "purchases": 330751
+    },
+    {
+      "head": "sea salt",
+      "rate": 0.5409,
+      "purchases": 166529
+    },
+    {
+      "head": "snack",
+      "rate": 0.5409,
+      "purchases": 25451
+    },
+    {
+      "head": "grape fruit",
+      "rate": 0.5395,
+      "purchases": 2228
+    },
+    {
+      "head": "mango kombucha",
+      "rate": 0.5395,
+      "purchases": 569
+    },
+    {
+      "head": "veggie",
+      "rate": 0.5394,
+      "purchases": 55416
+    },
+    {
+      "head": "power",
+      "rate": 0.5389,
+      "purchases": 13858
+    },
+    {
+      "head": "banana bread",
+      "rate": 0.5389,
+      "purchases": 3719
+    },
+    {
+      "head": "egg",
+      "rate": 0.5382,
+      "purchases": 49990
+    },
+    {
+      "head": "cashew nut",
+      "rate": 0.5371,
+      "purchases": 769
+    },
+    {
+      "head": "sweet",
+      "rate": 0.5368,
+      "purchases": 182821
+    },
+    {
+      "head": "cup noodle",
+      "rate": 0.5367,
+      "purchases": 2782
+    },
+    {
+      "head": "biscotti",
+      "rate": 0.5366,
+      "purchases": 492
+    },
+    {
+      "head": "black rice",
+      "rate": 0.5365,
+      "purchases": 1193
+    },
+    {
+      "head": "danish",
+      "rate": 0.5352,
+      "purchases": 1306
+    },
+    {
+      "head": "onion",
+      "rate": 0.5321,
+      "purchases": 73492
+    },
+    {
+      "head": "dried",
+      "rate": 0.5317,
+      "purchases": 41257
+    },
+    {
+      "head": "thin",
+      "rate": 0.53,
+      "purchases": 58840
+    },
+    {
+      "head": "feta cheese",
+      "rate": 0.5291,
+      "purchases": 42871
+    },
+    {
+      "head": "ginger beer",
+      "rate": 0.5286,
+      "purchases": 10377
+    },
+    {
+      "head": "rolled oat",
+      "rate": 0.5273,
+      "purchases": 45883
+    },
+    {
+      "head": "sugar free mint",
+      "rate": 0.5266,
+      "purchases": 207
+    },
+    {
+      "head": "crunch",
+      "rate": 0.5259,
+      "purchases": 21970
+    },
+    {
+      "head": "potato",
+      "rate": 0.5258,
+      "purchases": 86483
+    },
+    {
+      "head": "fusilli pasta",
+      "rate": 0.5246,
+      "purchases": 2825
+    },
+    {
+      "head": "monterey jack cheese",
+      "rate": 0.5239,
+      "purchases": 11505
+    },
+    {
+      "head": "banana chip",
+      "rate": 0.5236,
+      "purchases": 3289
+    },
+    {
+      "head": "flax seed",
+      "rate": 0.522,
+      "purchases": 9023
+    },
+    {
+      "head": "sour cream",
+      "rate": 0.5218,
+      "purchases": 92255
+    },
+    {
+      "head": "carrot",
+      "rate": 0.5216,
+      "purchases": 20499
+    },
+    {
+      "head": "man",
+      "rate": 0.5216,
+      "purchases": 278
+    },
+    {
+      "head": "corn flake",
+      "rate": 0.5212,
+      "purchases": 4802
+    },
+    {
+      "head": "brown rice",
+      "rate": 0.5205,
+      "purchases": 121911
+    },
+    {
+      "head": "atlantic salmon",
+      "rate": 0.5191,
+      "purchases": 2849
+    },
+    {
+      "head": "pumpkin seed",
+      "rate": 0.5179,
+      "purchases": 10920
+    },
+    {
+      "head": "black tea",
+      "rate": 0.5173,
+      "purchases": 14430
+    },
+    {
+      "head": "seed",
+      "rate": 0.5172,
+      "purchases": 22046
+    },
+    {
+      "head": "gouda cheese",
+      "rate": 0.5161,
+      "purchases": 3534
+    },
+    {
+      "head": "bar",
+      "rate": 0.5144,
+      "purchases": 14968
+    },
+    {
+      "head": "pina colada",
+      "rate": 0.5139,
+      "purchases": 251
+    },
+    {
+      "head": "nacho cheese",
+      "rate": 0.513,
+      "purchases": 4567
+    },
+    {
+      "head": "chewing gum",
+      "rate": 0.5125,
+      "purchases": 3553
+    },
+    {
+      "head": "jelly",
+      "rate": 0.5125,
+      "purchases": 3401
+    },
+    {
+      "head": "mozzarella cheese",
+      "rate": 0.5116,
+      "purchases": 41670
+    },
+    {
+      "head": "penne rigate",
+      "rate": 0.5109,
+      "purchases": 32175
+    },
+    {
+      "head": "select",
+      "rate": 0.5106,
+      "purchases": 23687
+    },
+    {
+      "head": "facial tissue",
+      "rate": 0.5105,
+      "purchases": 25265
+    },
+    {
+      "head": "instant coffee",
+      "rate": 0.5098,
+      "purchases": 7807
+    },
+    {
+      "head": "dried fruit",
+      "rate": 0.5093,
+      "purchases": 970
+    },
+    {
+      "head": "walnut",
+      "rate": 0.5067,
+      "purchases": 13569
+    },
+    {
+      "head": "rosemary",
+      "rate": 0.5064,
+      "purchases": 16812
+    },
+    {
+      "head": "frozen dessert",
+      "rate": 0.5063,
+      "purchases": 31981
+    },
+    {
+      "head": "fabric conditioner",
+      "rate": 0.5053,
+      "purchases": 1688
+    },
+    {
+      "head": "salsa",
+      "rate": 0.5048,
+      "purchases": 73626
+    },
+    {
+      "head": "dal",
+      "rate": 0.5041,
+      "purchases": 1101
+    },
+    {
+      "head": "gum",
+      "rate": 0.5036,
+      "purchases": 4875
+    },
+    {
+      "head": "dishwasher tablet",
+      "rate": 0.5035,
+      "purchases": 3021
+    },
+    {
+      "head": "sweet corn",
+      "rate": 0.5029,
+      "purchases": 43182
+    },
+    {
+      "head": "celery",
+      "rate": 0.5029,
+      "purchases": 29765
+    },
+    {
+      "head": "hazelnut",
+      "rate": 0.5027,
+      "purchases": 14178
+    },
+    {
+      "head": "aloe vera juice",
+      "rate": 0.5024,
+      "purchases": 844
+    },
+    {
+      "head": "combo pack",
+      "rate": 0.502,
+      "purchases": 757
+    },
+    {
+      "head": "earl grey tea",
+      "rate": 0.5017,
+      "purchases": 5982
+    },
+    {
+      "head": "glow",
+      "rate": 0.5015,
+      "purchases": 327
+    },
+    {
+      "head": "snack mix",
+      "rate": 0.5007,
+      "purchases": 14161
+    },
+    {
+      "head": "oreo",
+      "rate": 0.4987,
+      "purchases": 14444
+    },
+    {
+      "head": "creme",
+      "rate": 0.4986,
+      "purchases": 22752
+    },
+    {
+      "head": "plum",
+      "rate": 0.4984,
+      "purchases": 15568
+    },
+    {
+      "head": "atta bread",
+      "rate": 0.4968,
+      "purchases": 624
+    },
+    {
+      "head": "cut",
+      "rate": 0.4965,
+      "purchases": 75802
+    },
+    {
+      "head": "green cabbage",
+      "rate": 0.4956,
+      "purchases": 26348
+    },
+    {
+      "head": "flour",
+      "rate": 0.4954,
+      "purchases": 63376
+    },
+    {
+      "head": "wafer",
+      "rate": 0.4924,
+      "purchases": 855
+    },
+    {
+      "head": "spaghetti",
+      "rate": 0.4924,
+      "purchases": 46019
+    },
+    {
+      "head": "choco",
+      "rate": 0.4923,
+      "purchases": 453
+    },
+    {
+      "head": "protein plus",
+      "rate": 0.4916,
+      "purchases": 2793
+    },
+    {
+      "head": "peanut",
+      "rate": 0.4915,
+      "purchases": 4946
+    },
+    {
+      "head": "date",
+      "rate": 0.4913,
+      "purchases": 1439
+    },
+    {
+      "head": "garlic",
+      "rate": 0.4908,
+      "purchases": 117281
+    },
+    {
+      "head": "ice cream",
+      "rate": 0.4886,
+      "purchases": 254153
+    },
+    {
+      "head": "corn",
+      "rate": 0.4877,
+      "purchases": 106272
+    },
+    {
+      "head": "aloe vera",
+      "rate": 0.4855,
+      "purchases": 2270
+    },
+    {
+      "head": "red cabbage",
+      "rate": 0.4849,
+      "purchases": 19960
+    },
+    {
+      "head": "zucchini",
+      "rate": 0.4831,
+      "purchases": 7589
+    },
+    {
+      "head": "salt",
+      "rate": 0.483,
+      "purchases": 79318
+    },
+    {
+      "head": "spicy",
+      "rate": 0.4817,
+      "purchases": 36479
+    },
+    {
+      "head": "chana masala",
+      "rate": 0.4807,
+      "purchases": 233
+    },
+    {
+      "head": "oriental",
+      "rate": 0.4802,
+      "purchases": 631
+    },
+    {
+      "head": "flaxseed oil",
+      "rate": 0.4797,
+      "purchases": 369
+    },
+    {
+      "head": "basmati rice",
+      "rate": 0.479,
+      "purchases": 17677
+    },
+    {
+      "head": "intense",
+      "rate": 0.4783,
+      "purchases": 1338
+    },
+    {
+      "head": "pasta sauce",
+      "rate": 0.4775,
+      "purchases": 94932
+    },
+    {
+      "head": "chicken sausage",
+      "rate": 0.4773,
+      "purchases": 24948
+    },
+    {
+      "head": "yam",
+      "rate": 0.4773,
+      "purchases": 220
+    },
+    {
+      "head": "mix",
+      "rate": 0.4766,
+      "purchases": 59578
+    },
+    {
+      "head": "frozen vegetable",
+      "rate": 0.4763,
+      "purchases": 716
+    },
+    {
+      "head": "leaf tea",
+      "rate": 0.476,
+      "purchases": 458
+    },
+    {
+      "head": "pitted green olive",
+      "rate": 0.475,
+      "purchases": 3417
+    },
+    {
+      "head": "rice",
+      "rate": 0.4747,
+      "purchases": 106497
+    },
+    {
+      "head": "squash",
+      "rate": 0.4745,
+      "purchases": 38441
+    },
+    {
+      "head": "cracker",
+      "rate": 0.4741,
+      "purchases": 4839
+    },
+    {
+      "head": "kool",
+      "rate": 0.4737,
+      "purchases": 513
+    },
+    {
+      "head": "green pea",
+      "rate": 0.473,
+      "purchases": 19952
+    },
+    {
+      "head": "liquid detergent",
+      "rate": 0.4726,
+      "purchases": 1312
+    },
+    {
+      "head": "quinoa",
+      "rate": 0.4723,
+      "purchases": 11324
+    },
+    {
+      "head": "channa",
+      "rate": 0.4665,
+      "purchases": 1209
+    },
+    {
+      "head": "candy",
+      "rate": 0.4652,
+      "purchases": 18294
+    },
+    {
+      "head": "pickle",
+      "rate": 0.4647,
+      "purchases": 6761
+    },
+    {
+      "head": "dip",
+      "rate": 0.4628,
+      "purchases": 9499
+    },
+    {
+      "head": "pork",
+      "rate": 0.4624,
+      "purchases": 28789
+    },
+    {
+      "head": "drumstick",
+      "rate": 0.4621,
+      "purchases": 1766
+    },
+    {
+      "head": "sunflower seed",
+      "rate": 0.4579,
+      "purchases": 9498
+    },
+    {
+      "head": "pumpkin",
+      "rate": 0.4564,
+      "purchases": 26544
+    },
+    {
+      "head": "baby diaper",
+      "rate": 0.4556,
+      "purchases": 1216
+    },
+    {
+      "head": "ginger",
+      "rate": 0.4555,
+      "purchases": 57890
+    },
+    {
+      "head": "baby cream",
+      "rate": 0.4553,
+      "purchases": 1164
+    },
+    {
+      "head": "toast",
+      "rate": 0.4549,
+      "purchases": 864
+    },
+    {
+      "head": "sugar",
+      "rate": 0.4546,
+      "purchases": 108886
+    },
+    {
+      "head": "olive oil",
+      "rate": 0.4532,
+      "purchases": 149883
+    },
+    {
+      "head": "crunchy granola",
+      "rate": 0.4532,
+      "purchases": 1229
+    },
+    {
+      "head": "fish",
+      "rate": 0.4531,
+      "purchases": 9713
+    },
+    {
+      "head": "mushroom",
+      "rate": 0.4525,
+      "purchases": 18832
+    },
+    {
+      "head": "wipe",
+      "rate": 0.451,
+      "purchases": 388
+    },
+    {
+      "head": "microwave popcorn",
+      "rate": 0.4509,
+      "purchases": 7148
+    },
+    {
+      "head": "ramen noodle",
+      "rate": 0.4505,
+      "purchases": 12760
+    },
+    {
+      "head": "mint",
+      "rate": 0.4504,
+      "purchases": 55556
+    },
+    {
+      "head": "perfume",
+      "rate": 0.4502,
+      "purchases": 251
+    },
+    {
+      "head": "instant noodle",
+      "rate": 0.4473,
+      "purchases": 503
+    },
+    {
+      "head": "tomato sauce",
+      "rate": 0.4472,
+      "purchases": 38343
+    },
+    {
+      "head": "lite",
+      "rate": 0.4444,
+      "purchases": 13813
+    },
+    {
+      "head": "scrubber",
+      "rate": 0.4433,
+      "purchases": 3163
+    },
+    {
+      "head": "yum yum",
+      "rate": 0.4428,
+      "purchases": 481
+    },
+    {
+      "head": "pasta",
+      "rate": 0.4421,
+      "purchases": 73113
+    },
+    {
+      "head": "parsley",
+      "rate": 0.4411,
+      "purchases": 32143
+    },
+    {
+      "head": "parmesan cheese",
+      "rate": 0.4408,
+      "purchases": 32668
+    },
+    {
+      "head": "noodle",
+      "rate": 0.4408,
+      "purchases": 6098
+    },
+    {
+      "head": "sleep aid",
+      "rate": 0.4399,
+      "purchases": 1439
+    },
+    {
+      "head": "steel cut oat",
+      "rate": 0.4399,
+      "purchases": 9897
+    },
+    {
+      "head": "seed butter",
+      "rate": 0.4385,
+      "purchases": 821
+    },
+    {
+      "head": "pancake mix",
+      "rate": 0.4384,
+      "purchases": 5995
+    },
+    {
+      "head": "spring onion",
+      "rate": 0.438,
+      "purchases": 363
+    },
+    {
+      "head": "mixed herb",
+      "rate": 0.4369,
+      "purchases": 515
+    },
+    {
+      "head": "pop corn",
+      "rate": 0.4363,
+      "purchases": 2017
+    },
+    {
+      "head": "mayo",
+      "rate": 0.4342,
+      "purchases": 6133
+    },
+    {
+      "head": "applicator tampon",
+      "rate": 0.4332,
+      "purchases": 247
+    },
+    {
+      "head": "brown sugar",
+      "rate": 0.4318,
+      "purchases": 47653
+    },
+    {
+      "head": "intimate wipe",
+      "rate": 0.4312,
+      "purchases": 385
+    },
+    {
+      "head": "ghee",
+      "rate": 0.4299,
+      "purchases": 8726
+    },
+    {
+      "head": "roasted peanut",
+      "rate": 0.4298,
+      "purchases": 3606
+    },
+    {
+      "head": "vanilla sugar",
+      "rate": 0.4292,
+      "purchases": 862
+    },
+    {
+      "head": "white chocolate",
+      "rate": 0.4281,
+      "purchases": 5214
+    },
+    {
+      "head": "masala",
+      "rate": 0.4263,
+      "purchases": 4300
+    },
+    {
+      "head": "pistachio",
+      "rate": 0.4258,
+      "purchases": 3544
+    },
+    {
+      "head": "layer cake",
+      "rate": 0.4244,
+      "purchases": 589
+    },
+    {
+      "head": "fusion",
+      "rate": 0.4225,
+      "purchases": 1264
+    },
+    {
+      "head": "long grain rice",
+      "rate": 0.4224,
+      "purchases": 4863
+    },
+    {
+      "head": "dragon fruit",
+      "rate": 0.4224,
+      "purchases": 393
+    },
+    {
+      "head": "hair color",
+      "rate": 0.4221,
+      "purchases": 597
+    },
+    {
+      "head": "basil",
+      "rate": 0.4202,
+      "purchases": 50424
+    },
+    {
+      "head": "taco shell",
+      "rate": 0.4196,
+      "purchases": 8194
+    },
+    {
+      "head": "croissant",
+      "rate": 0.4192,
+      "purchases": 260
+    },
+    {
+      "head": "chunky salsa",
+      "rate": 0.4187,
+      "purchases": 12461
+    },
+    {
+      "head": "soap bar",
+      "rate": 0.4172,
+      "purchases": 4267
+    },
+    {
+      "head": "infusion bag",
+      "rate": 0.4159,
+      "purchases": 529
+    },
+    {
+      "head": "avocado oil",
+      "rate": 0.4151,
+      "purchases": 9280
+    },
+    {
+      "head": "canola oil",
+      "rate": 0.4139,
+      "purchases": 24736
+    },
+    {
+      "head": "baby corn",
+      "rate": 0.4123,
+      "purchases": 2137
+    },
+    {
+      "head": "wet wipe",
+      "rate": 0.4105,
+      "purchases": 1140
+    },
+    {
+      "head": "spice",
+      "rate": 0.4095,
+      "purchases": 2354
+    },
+    {
+      "head": "sunflower oil",
+      "rate": 0.4078,
+      "purchases": 1177
+    },
+    {
+      "head": "sauce",
+      "rate": 0.4077,
+      "purchases": 122694
+    },
+    {
+      "head": "active",
+      "rate": 0.4071,
+      "purchases": 1383
+    },
+    {
+      "head": "nature",
+      "rate": 0.4058,
+      "purchases": 2001
+    },
+    {
+      "head": "apricot",
+      "rate": 0.4046,
+      "purchases": 10498
+    },
+    {
+      "head": "tapioca",
+      "rate": 0.4045,
+      "purchases": 796
+    },
+    {
+      "head": "dishwasher",
+      "rate": 0.4024,
+      "purchases": 10231
+    },
+    {
+      "head": "pudding",
+      "rate": 0.4007,
+      "purchases": 1183
+    },
+    {
+      "head": "radish",
+      "rate": 0.3985,
+      "purchases": 2858
+    },
+    {
+      "head": "biscuit",
+      "rate": 0.3969,
+      "purchases": 587
+    },
+    {
+      "head": "cinnamon sugar",
+      "rate": 0.3964,
+      "purchases": 2210
+    },
+    {
+      "head": "panty liner",
+      "rate": 0.3958,
+      "purchases": 1180
+    },
+    {
+      "head": "gouda",
+      "rate": 0.3947,
+      "purchases": 3737
+    },
+    {
+      "head": "girl",
+      "rate": 0.3925,
+      "purchases": 637
+    },
+    {
+      "head": "tea bag",
+      "rate": 0.3913,
+      "purchases": 34016
+    },
+    {
+      "head": "green olive",
+      "rate": 0.3911,
+      "purchases": 1368
+    },
+    {
+      "head": "rice mix",
+      "rate": 0.3897,
+      "purchases": 4052
+    },
+    {
+      "head": "bocconcini",
+      "rate": 0.3892,
+      "purchases": 1092
+    },
+    {
+      "head": "disinfecting wipe",
+      "rate": 0.3889,
+      "purchases": 14974
+    },
+    {
+      "head": "fish fillet",
+      "rate": 0.388,
+      "purchases": 1629
+    },
+    {
+      "head": "paper napkin",
+      "rate": 0.3841,
+      "purchases": 591
+    },
+    {
+      "head": "herbal tea",
+      "rate": 0.3831,
+      "purchases": 30389
+    },
+    {
+      "head": "toffee",
+      "rate": 0.3824,
+      "purchases": 408
+    },
+    {
+      "head": "syrup",
+      "rate": 0.3819,
+      "purchases": 10937
+    },
+    {
+      "head": "dressing",
+      "rate": 0.3818,
+      "purchases": 43196
+    },
+    {
+      "head": "dishwashing liquid",
+      "rate": 0.3812,
+      "purchases": 3612
+    },
+    {
+      "head": "instant soup",
+      "rate": 0.3785,
+      "purchases": 391
+    },
+    {
+      "head": "instant",
+      "rate": 0.3784,
+      "purchases": 10420
+    },
+    {
+      "head": "sandwich spread",
+      "rate": 0.3784,
+      "purchases": 1966
+    },
+    {
+      "head": "oxy",
+      "rate": 0.3775,
+      "purchases": 861
+    },
+    {
+      "head": "pure honey",
+      "rate": 0.3766,
+      "purchases": 1041
+    },
+    {
+      "head": "candle",
+      "rate": 0.3751,
+      "purchases": 2743
+    },
+    {
+      "head": "grapeseed oil",
+      "rate": 0.374,
+      "purchases": 5096
+    },
+    {
+      "head": "stress relief",
+      "rate": 0.373,
+      "purchases": 2673
+    },
+    {
+      "head": "wheat grass",
+      "rate": 0.3707,
+      "purchases": 205
+    },
+    {
+      "head": "whey protein",
+      "rate": 0.3659,
+      "purchases": 4165
+    },
+    {
+      "head": "scent",
+      "rate": 0.3647,
+      "purchases": 27028
+    },
+    {
+      "head": "hot sauce",
+      "rate": 0.3646,
+      "purchases": 20408
+    },
+    {
+      "head": "mayonnaise",
+      "rate": 0.3633,
+      "purchases": 23700
+    },
+    {
+      "head": "coconut oil",
+      "rate": 0.3631,
+      "purchases": 30682
+    },
+    {
+      "head": "chamomile tea",
+      "rate": 0.3619,
+      "purchases": 1600
+    },
+    {
+      "head": "shower gel",
+      "rate": 0.36,
+      "purchases": 1603
+    },
+    {
+      "head": "kidney bean",
+      "rate": 0.3596,
+      "purchases": 22586
+    },
+    {
+      "head": "soap",
+      "rate": 0.359,
+      "purchases": 21184
+    },
+    {
+      "head": "imitation",
+      "rate": 0.3588,
+      "purchases": 931
+    },
+    {
+      "head": "classico",
+      "rate": 0.3585,
+      "purchases": 1071
+    },
+    {
+      "head": "vitamin c",
+      "rate": 0.356,
+      "purchases": 10474
+    },
+    {
+      "head": "baby wash",
+      "rate": 0.3544,
+      "purchases": 632
+    },
+    {
+      "head": "leek",
+      "rate": 0.3527,
+      "purchases": 3490
+    },
+    {
+      "head": "chia seed",
+      "rate": 0.352,
+      "purchases": 12838
+    },
+    {
+      "head": "apple cider vinegar",
+      "rate": 0.3506,
+      "purchases": 23097
+    },
+    {
+      "head": "ketchup",
+      "rate": 0.3503,
+      "purchases": 2481
+    },
+    {
+      "head": "rice vermicelli",
+      "rate": 0.3493,
+      "purchases": 335
+    },
+    {
+      "head": "chutney",
+      "rate": 0.349,
+      "purchases": 573
+    },
+    {
+      "head": "neem",
+      "rate": 0.3469,
+      "purchases": 245
+    },
+    {
+      "head": "woman",
+      "rate": 0.3469,
+      "purchases": 320
+    },
+    {
+      "head": "salad dressing",
+      "rate": 0.3435,
+      "purchases": 9875
+    },
+    {
+      "head": "cone",
+      "rate": 0.3433,
+      "purchases": 201
+    },
+    {
+      "head": "pink salt",
+      "rate": 0.3423,
+      "purchases": 4557
+    },
+    {
+      "head": "air freshener",
+      "rate": 0.3402,
+      "purchases": 5603
+    },
+    {
+      "head": "wheat bran",
+      "rate": 0.3399,
+      "purchases": 409
+    },
+    {
+      "head": "hand wash",
+      "rate": 0.3387,
+      "purchases": 6380
+    },
+    {
+      "head": "bleach",
+      "rate": 0.3374,
+      "purchases": 12107
+    },
+    {
+      "head": "turmeric",
+      "rate": 0.3367,
+      "purchases": 6802
+    },
+    {
+      "head": "original scent",
+      "rate": 0.3352,
+      "purchases": 8383
+    },
+    {
+      "head": "seasoning",
+      "rate": 0.335,
+      "purchases": 36945
+    },
+    {
+      "head": "hand sanitizer",
+      "rate": 0.3333,
+      "purchases": 3381
+    },
+    {
+      "head": "mouthwash",
+      "rate": 0.3333,
+      "purchases": 2034
+    },
+    {
+      "head": "tomato ketchup",
+      "rate": 0.3329,
+      "purchases": 25103
+    },
+    {
+      "head": "certified",
+      "rate": 0.3295,
+      "purchases": 3967
+    },
+    {
+      "head": "garlic pickle",
+      "rate": 0.3291,
+      "purchases": 395
+    },
+    {
+      "head": "body wash",
+      "rate": 0.3287,
+      "purchases": 17805
+    },
+    {
+      "head": "muffin",
+      "rate": 0.3279,
+      "purchases": 2031
+    },
+    {
+      "head": "antiseptic",
+      "rate": 0.3277,
+      "purchases": 2072
+    },
+    {
+      "head": "wrap",
+      "rate": 0.3276,
+      "purchases": 10965
+    },
+    {
+      "head": "refined",
+      "rate": 0.3267,
+      "purchases": 655
+    },
+    {
+      "head": "floor cleaner",
+      "rate": 0.3258,
+      "purchases": 1722
+    },
+    {
+      "head": "oil",
+      "rate": 0.3237,
+      "purchases": 18264
+    },
+    {
+      "head": "hand soap",
+      "rate": 0.3236,
+      "purchases": 35851
+    },
+    {
+      "head": "cotton tampon",
+      "rate": 0.3222,
+      "purchases": 1527
+    },
+    {
+      "head": "toothpaste",
+      "rate": 0.3213,
+      "purchases": 19795
+    },
+    {
+      "head": "lemon grass",
+      "rate": 0.3175,
+      "purchases": 3083
+    },
+    {
+      "head": "cabbage",
+      "rate": 0.3169,
+      "purchases": 5500
+    },
+    {
+      "head": "day cream",
+      "rate": 0.3156,
+      "purchases": 263
+    },
+    {
+      "head": "sliced jalapeno",
+      "rate": 0.3151,
+      "purchases": 1625
+    },
+    {
+      "head": "pepper sauce",
+      "rate": 0.3127,
+      "purchases": 5488
+    },
+    {
+      "head": "nacho",
+      "rate": 0.3114,
+      "purchases": 1596
+    },
+    {
+      "head": "lotion",
+      "rate": 0.3098,
+      "purchases": 2844
+    },
+    {
+      "head": "marshmallow",
+      "rate": 0.3097,
+      "purchases": 2299
+    },
+    {
+      "head": "incense stick",
+      "rate": 0.3091,
+      "purchases": 220
+    },
+    {
+      "head": "cake",
+      "rate": 0.3087,
+      "purchases": 10405
+    },
+    {
+      "head": "digestive",
+      "rate": 0.3061,
+      "purchases": 624
+    },
+    {
+      "head": "shield",
+      "rate": 0.3057,
+      "purchases": 3549
+    },
+    {
+      "head": "rush",
+      "rate": 0.3048,
+      "purchases": 771
+    },
+    {
+      "head": "garbage bag",
+      "rate": 0.2996,
+      "purchases": 2513
+    },
+    {
+      "head": "thyme",
+      "rate": 0.299,
+      "purchases": 6810
+    },
+    {
+      "head": "body deodorant",
+      "rate": 0.2972,
+      "purchases": 323
+    },
+    {
+      "head": "chocolate syrup",
+      "rate": 0.2963,
+      "purchases": 2187
+    },
+    {
+      "head": "loofah",
+      "rate": 0.2961,
+      "purchases": 466
+    },
+    {
+      "head": "disinfectant",
+      "rate": 0.2955,
+      "purchases": 1391
+    },
+    {
+      "head": "nutritional yeast",
+      "rate": 0.2942,
+      "purchases": 3488
+    },
+    {
+      "head": "moisturizing cream",
+      "rate": 0.2939,
+      "purchases": 609
+    },
+    {
+      "head": "cooking spray",
+      "rate": 0.2922,
+      "purchases": 3905
+    },
+    {
+      "head": "surface cleaner",
+      "rate": 0.2921,
+      "purchases": 7252
+    },
+    {
+      "head": "wheat flour",
+      "rate": 0.2888,
+      "purchases": 5602
+    },
+    {
+      "head": "flake",
+      "rate": 0.2887,
+      "purchases": 762
+    },
+    {
+      "head": "jam",
+      "rate": 0.288,
+      "purchases": 1368
+    },
+    {
+      "head": "neem honey",
+      "rate": 0.2851,
+      "purchases": 228
+    },
+    {
+      "head": "jackfruit",
+      "rate": 0.285,
+      "purchases": 572
+    },
+    {
+      "head": "fennel",
+      "rate": 0.2844,
+      "purchases": 3274
+    },
+    {
+      "head": "powder",
+      "rate": 0.2823,
+      "purchases": 13888
+    },
+    {
+      "head": "sweet chilli sauce",
+      "rate": 0.2775,
+      "purchases": 418
+    },
+    {
+      "head": "baby oil",
+      "rate": 0.2774,
+      "purchases": 411
+    },
+    {
+      "head": "ginger pickle",
+      "rate": 0.277,
+      "purchases": 834
+    },
+    {
+      "head": "fettuccine pasta",
+      "rate": 0.276,
+      "purchases": 1348
+    },
+    {
+      "head": "baby shampoo",
+      "rate": 0.274,
+      "purchases": 697
+    },
+    {
+      "head": "toothbrush",
+      "rate": 0.2728,
+      "purchases": 6514
+    },
+    {
+      "head": "dry yeast",
+      "rate": 0.269,
+      "purchases": 4988
+    },
+    {
+      "head": "daily",
+      "rate": 0.269,
+      "purchases": 5781
+    },
+    {
+      "head": "tea tree oil",
+      "rate": 0.2681,
+      "purchases": 2305
+    },
+    {
+      "head": "deodorant spray",
+      "rate": 0.2675,
+      "purchases": 314
+    },
+    {
+      "head": "baking soda",
+      "rate": 0.2674,
+      "purchases": 13203
+    },
+    {
+      "head": "argan oil",
+      "rate": 0.2651,
+      "purchases": 2395
+    },
+    {
+      "head": "moisturizing lotion",
+      "rate": 0.265,
+      "purchases": 1913
+    },
+    {
+      "head": "cleaner",
+      "rate": 0.2641,
+      "purchases": 13026
+    },
+    {
+      "head": "glass cleaner",
+      "rate": 0.2641,
+      "purchases": 6301
+    },
+    {
+      "head": "flaxseed",
+      "rate": 0.2614,
+      "purchases": 3011
+    },
+    {
+      "head": "cleanser",
+      "rate": 0.2598,
+      "purchases": 3537
+    },
+    {
+      "head": "gel",
+      "rate": 0.2578,
+      "purchases": 8808
+    },
+    {
+      "head": "rinse aid",
+      "rate": 0.2576,
+      "purchases": 2364
+    },
+    {
+      "head": "scrub",
+      "rate": 0.2573,
+      "purchases": 8888
+    },
+    {
+      "head": "spray",
+      "rate": 0.2571,
+      "purchases": 8461
+    },
+    {
+      "head": "face wash",
+      "rate": 0.2571,
+      "purchases": 1474
+    },
+    {
+      "head": "body spray",
+      "rate": 0.2568,
+      "purchases": 518
+    },
+    {
+      "head": "hair spray",
+      "rate": 0.2566,
+      "purchases": 569
+    },
+    {
+      "head": "coconut sugar",
+      "rate": 0.2558,
+      "purchases": 1560
+    },
+    {
+      "head": "blush",
+      "rate": 0.2557,
+      "purchases": 1267
+    },
+    {
+      "head": "black pepper",
+      "rate": 0.2523,
+      "purchases": 24107
+    },
+    {
+      "head": "hair conditioner",
+      "rate": 0.2502,
+      "purchases": 1007
+    },
+    {
+      "head": "fusion proglide",
+      "rate": 0.2469,
+      "purchases": 559
+    },
+    {
+      "head": "almond oil",
+      "rate": 0.2447,
+      "purchases": 609
+    },
+    {
+      "head": "barbeque sauce",
+      "rate": 0.2397,
+      "purchases": 1677
+    },
+    {
+      "head": "spirulina powder",
+      "rate": 0.2396,
+      "purchases": 338
+    },
+    {
+      "head": "diaper rash cream",
+      "rate": 0.2393,
+      "purchases": 234
+    },
+    {
+      "head": "saffron",
+      "rate": 0.2375,
+      "purchases": 598
+    },
+    {
+      "head": "cough drop",
+      "rate": 0.2372,
+      "purchases": 1505
+    },
+    {
+      "head": "peanut oil",
+      "rate": 0.2352,
+      "purchases": 1229
+    },
+    {
+      "head": "shampoo",
+      "rate": 0.2351,
+      "purchases": 9098
+    },
+    {
+      "head": "oat flour",
+      "rate": 0.2308,
+      "purchases": 975
+    },
+    {
+      "head": "deodorant",
+      "rate": 0.2303,
+      "purchases": 8592
+    },
+    {
+      "head": "conditioner",
+      "rate": 0.2299,
+      "purchases": 4975
+    },
+    {
+      "head": "razor",
+      "rate": 0.2299,
+      "purchases": 2244
+    },
+    {
+      "head": "mustard",
+      "rate": 0.226,
+      "purchases": 21579
+    },
+    {
+      "head": "toilet bowl cleaner",
+      "rate": 0.2258,
+      "purchases": 5275
+    },
+    {
+      "head": "sriracha sauce",
+      "rate": 0.2239,
+      "purchases": 1599
+    },
+    {
+      "head": "shaving cream",
+      "rate": 0.2238,
+      "purchases": 505
+    },
+    {
+      "head": "anti dandruff shampoo",
+      "rate": 0.2236,
+      "purchases": 550
+    },
+    {
+      "head": "bathroom cleaner",
+      "rate": 0.2217,
+      "purchases": 3689
+    },
+    {
+      "head": "polish",
+      "rate": 0.2205,
+      "purchases": 1864
+    },
+    {
+      "head": "jojoba oil",
+      "rate": 0.2194,
+      "purchases": 310
+    },
+    {
+      "head": "red curry paste",
+      "rate": 0.2163,
+      "purchases": 4217
+    },
+    {
+      "head": "body lotion",
+      "rate": 0.2162,
+      "purchases": 2734
+    },
+    {
+      "head": "caster sugar",
+      "rate": 0.2162,
+      "purchases": 259
+    },
+    {
+      "head": "stir fry sauce",
+      "rate": 0.2158,
+      "purchases": 811
+    },
+    {
+      "head": "face scrub",
+      "rate": 0.2115,
+      "purchases": 643
+    },
+    {
+      "head": "vinegar",
+      "rate": 0.2113,
+      "purchases": 26151
+    },
+    {
+      "head": "toilet cleaner",
+      "rate": 0.2106,
+      "purchases": 565
+    },
+    {
+      "head": "petal",
+      "rate": 0.2077,
+      "purchases": 597
+    },
+    {
+      "head": "green curry paste",
+      "rate": 0.2049,
+      "purchases": 2191
+    },
+    {
+      "head": "facial scrub",
+      "rate": 0.2021,
+      "purchases": 470
+    },
+    {
+      "head": "lip balm",
+      "rate": 0.1991,
+      "purchases": 1537
+    },
+    {
+      "head": "dry shampoo",
+      "rate": 0.1907,
+      "purchases": 493
+    },
+    {
+      "head": "cardamom",
+      "rate": 0.1896,
+      "purchases": 786
+    },
+    {
+      "head": "sunscreen",
+      "rate": 0.1845,
+      "purchases": 1225
+    },
+    {
+      "head": "room freshener",
+      "rate": 0.1842,
+      "purchases": 570
+    },
+    {
+      "head": "kitchen cleaner",
+      "rate": 0.1833,
+      "purchases": 371
+    },
+    {
+      "head": "hot chocolate",
+      "rate": 0.1829,
+      "purchases": 574
+    },
+    {
+      "head": "aluminium foil",
+      "rate": 0.1805,
+      "purchases": 2753
+    },
+    {
+      "head": "cocoa powder",
+      "rate": 0.18,
+      "purchases": 5155
+    },
+    {
+      "head": "cumin",
+      "rate": 0.1745,
+      "purchases": 6194
+    },
+    {
+      "head": "paste",
+      "rate": 0.1743,
+      "purchases": 3047
+    },
+    {
+      "head": "washing machine cleaner",
+      "rate": 0.1719,
+      "purchases": 256
+    },
+    {
+      "head": "vermicelli",
+      "rate": 0.1696,
+      "purchases": 224
+    },
+    {
+      "head": "rice flour",
+      "rate": 0.1681,
+      "purchases": 589
+    },
+    {
+      "head": "sesame oil",
+      "rate": 0.1651,
+      "purchases": 3144
+    },
+    {
+      "head": "grinder",
+      "rate": 0.1649,
+      "purchases": 1704
+    },
+    {
+      "head": "cotton swab",
+      "rate": 0.1645,
+      "purchases": 4583
+    },
+    {
+      "head": "garlic powder",
+      "rate": 0.164,
+      "purchases": 9821
+    },
+    {
+      "head": "oregano",
+      "rate": 0.1605,
+      "purchases": 6729
+    },
+    {
+      "head": "essential oil",
+      "rate": 0.1592,
+      "purchases": 1885
+    },
+    {
+      "head": "sesame seed oil",
+      "rate": 0.157,
+      "purchases": 4880
+    },
+    {
+      "head": "baby powder",
+      "rate": 0.1565,
+      "purchases": 345
+    },
+    {
+      "head": "set",
+      "rate": 0.1538,
+      "purchases": 325
+    },
+    {
+      "head": "corn flour",
+      "rate": 0.1519,
+      "purchases": 553
+    },
+    {
+      "head": "buckwheat flour",
+      "rate": 0.1476,
+      "purchases": 359
+    },
+    {
+      "head": "hoisin sauce",
+      "rate": 0.1473,
+      "purchases": 2722
+    },
+    {
+      "head": "oyster sauce",
+      "rate": 0.1418,
+      "purchases": 783
+    },
+    {
+      "head": "chocolate cake mix",
+      "rate": 0.132,
+      "purchases": 568
+    },
+    {
+      "head": "tamarind",
+      "rate": 0.1303,
+      "purchases": 714
+    },
+    {
+      "head": "spanish saffron",
+      "rate": 0.127,
+      "purchases": 622
+    },
+    {
+      "head": "sunscreen lotion",
+      "rate": 0.1148,
+      "purchases": 209
+    },
+    {
+      "head": "coconut flour",
+      "rate": 0.1088,
+      "purchases": 2868
+    },
+    {
+      "head": "onion powder",
+      "rate": 0.106,
+      "purchases": 4888
+    },
+    {
+      "head": "fish sauce",
+      "rate": 0.0995,
+      "purchases": 3287
+    },
+    {
+      "head": "garam masala",
+      "rate": 0.0971,
+      "purchases": 1123
+    },
+    {
+      "head": "baking powder",
+      "rate": 0.0957,
+      "purchases": 7285
+    },
+    {
+      "head": "castor oil",
+      "rate": 0.0831,
+      "purchases": 301
+    },
+    {
+      "head": "cumin seed",
+      "rate": 0.0651,
+      "purchases": 1352
+    },
+    {
+      "head": "coriander",
+      "rate": 0.0632,
+      "purchases": 1203
+    },
+    {
+      "head": "coriander seed",
+      "rate": 0.0579,
+      "purchases": 587
+    },
+    {
+      "head": "vaporub",
+      "rate": 0.0552,
+      "purchases": 326
+    },
+    {
+      "head": "nutmeg",
+      "rate": 0.0479,
+      "purchases": 794
+    },
+    {
+      "head": "birthday candle",
+      "rate": 0.0433,
+      "purchases": 855
+    }
   ]
 }

@@ -27,7 +27,7 @@
  * Run: npx vite-node scripts/build-priors.ts
  */
 
-import { createReadStream, writeFileSync } from 'node:fs'
+import { createReadStream, readFileSync, writeFileSync } from 'node:fs'
 import { createInterface } from 'node:readline'
 import { join } from 'node:path'
 
@@ -36,6 +36,7 @@ import type { Category } from '../src/domain/types.ts'
 const ROOT = join(import.meta.dirname, '..')
 const RAW = join(ROOT, 'data-raw', 'instacart')
 const OUTPUT = join(ROOT, 'src', 'data', 'priors.generated.json')
+const CATALOG = join(ROOT, 'src', 'data', 'catalog.generated.json')
 
 /**
  * Users sampled from the 206k available.
@@ -158,23 +159,83 @@ for await (const line of lines('products.csv')) {
 
 console.log(`          ${productCategory.size.toLocaleString()} products mapped`)
 
-console.log('pass 3/3  order_products__prior.csv — intervals and co-occurrence (large)')
+// ---------------------------------------------------------------------------
+// Reorder rate: how often someone who buys an item buys it again.
+//
+// This is the only *behavioural* signal available for a shopper with no history
+// of their own. A discount is a property of a catalogue row and is identical for
+// everyone who opens the app; a reorder rate is 32M purchase decisions telling
+// you which items people actually keep coming back for. "9 in 10 shoppers rebuy
+// this" is a claim about behaviour. "51% off" from a 2020 price snapshot is not.
+//
+// Instacart products are matched to our catalogue by head noun. The vocabularies
+// only partly overlap — one is US, the other Indian — so coverage is reported
+// rather than assumed, and items without a match simply carry no rate.
+// ---------------------------------------------------------------------------
+
+const catalogHeads: string[] = (
+  JSON.parse(readFileSync(CATALOG, 'utf8')) as { items: Array<[string, string, ...unknown[]]> }
+).items.map(([, key]) => key)
+
+const headSet = new Set(catalogHeads)
+const multiWordHeads = catalogHeads.filter((head) => head.includes(' '))
+
+/** Head noun for an Instacart product name, or null when nothing matches. */
+function headForProduct(name: string): string | null {
+  const cleaned = name.toLowerCase().replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim()
+  for (const head of multiWordHeads) {
+    if (cleaned.includes(head)) return head
+  }
+  for (const word of cleaned.split(' ')) {
+    if (headSet.has(word)) return word
+  }
+  return null
+}
+
+const productHead = new Map<number, string>()
+for await (const line of lines('products.csv')) {
+  const firstComma = line.indexOf(',')
+  const lastComma = line.lastIndexOf(',')
+  const secondLast = line.lastIndexOf(',', lastComma - 1)
+  const productId = Number(line.slice(0, firstComma))
+  const name = line.slice(firstComma + 1, secondLast).replace(/^"|"$/g, '')
+  const head = headForProduct(name)
+  if (head !== null) productHead.set(productId, head)
+}
+console.log(`          ${productHead.size.toLocaleString()} products matched to a catalogue head`)
+
+console.log('pass 3/3  order_products__prior.csv — intervals, co-occurrence and reorder rate (large)')
 
 /** (userId, category) -> day offsets on which that user bought that category. */
 const purchases = new Map<string, number[]>()
 /** Categories present in each sampled order, for co-occurrence counting. */
 const basketCategories = new Map<number, Set<Category>>()
+/** head -> [reordered count, total purchases]. Counted across every row, not
+ *  only sampled users: a rate wants all the evidence available. */
+const reorderTally = new Map<string, [number, number]>()
 let productRows = 0
 
 for await (const line of lines('order_products__prior.csv')) {
   productRows += 1
   const firstComma = line.indexOf(',')
+  const secondComma = line.indexOf(',', firstComma + 1)
+  const productIdEarly = Number(line.slice(firstComma + 1, secondComma))
+
+  // order_id,product_id,add_to_cart_order,reordered
+  const head = productHead.get(productIdEarly)
+  if (head !== undefined) {
+    const reordered = line.charCodeAt(line.length - 1) === 49 ? 1 : 0
+    const tally = reorderTally.get(head) ?? [0, 0]
+    tally[0] += reordered
+    tally[1] += 1
+    reorderTally.set(head, tally)
+  }
+
   const orderId = Number(line.slice(0, firstComma))
   const meta = orderMeta.get(orderId)
   if (meta === undefined) continue
 
-  const secondComma = line.indexOf(',', firstComma + 1)
-  const productId = Number(line.slice(firstComma + 1, secondComma))
+  const productId = productIdEarly
   const category = productCategory.get(productId)
   if (category === undefined) continue
 
@@ -273,6 +334,22 @@ complements.sort((x, y) => y.lift - x.lift)
 
 // ---------------------------------------------------------------------------
 
+/**
+ * Kept only where there is enough evidence to mean anything.
+ *
+ * A head seen a handful of times produces a rate that is mostly noise; 200
+ * purchases is where the estimate stops moving much.
+ */
+const MIN_PURCHASES = 200
+const reorderRates = [...reorderTally.entries()]
+  .filter(([, [, total]]) => total >= MIN_PURCHASES)
+  .map(([head, [reordered, total]]) => ({
+    head,
+    rate: Number((reordered / total).toFixed(4)),
+    purchases: total,
+  }))
+  .sort((a, b) => b.rate - a.rate)
+
 const output = {
   _source: 'Instacart Online Grocery Shopping Dataset 2017 (Kaggle mirror psparks/instacart-market-basket-analysis, CC0-1.0)',
   _licence: "Mirror is published CC0-1.0; Instacart's original release terms are non-commercial. The stricter reading is assumed.",
@@ -285,6 +362,7 @@ const output = {
   },
   replenishment,
   complements: complements.slice(0, 40),
+  reorderRates,
 }
 
 writeFileSync(OUTPUT, `${JSON.stringify(output, null, 2)}\n`)
@@ -295,6 +373,16 @@ for (const [category, fit] of Object.entries(replenishment)) {
   if (fit === null) continue
   console.log(`  ${category.padEnd(15)} ${fit.meanDays.toFixed(1)} ± ${fit.sd.toFixed(1)} days   (alpha=${fit.alpha}, beta=${fit.beta}, n=${fit.n.toLocaleString()})`)
 }
+console.log(`\nreorder rates: ${reorderRates.length} items with >= ${MIN_PURCHASES} purchases`)
+console.log('most-rebought:')
+for (const r of reorderRates.slice(0, 10)) {
+  console.log(`  ${r.head.padEnd(22)} ${(r.rate * 100).toFixed(1)}% rebought  (${r.purchases.toLocaleString()} purchases)`)
+}
+console.log('least-rebought:')
+for (const r of reorderRates.slice(-5)) {
+  console.log(`  ${r.head.padEnd(22)} ${(r.rate * 100).toFixed(1)}% rebought  (${r.purchases.toLocaleString()} purchases)`)
+}
+
 console.log('\ntop category complements by lift:')
 for (const c of complements.slice(0, 10)) {
   console.log(`  ${c.a.padEnd(14)} + ${c.b.padEnd(14)} lift ${c.lift.toFixed(3)}  (${c.support.toLocaleString()} baskets)`)
