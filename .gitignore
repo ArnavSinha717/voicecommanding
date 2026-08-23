@@ -41,3 +41,8 @@ coverage/
 # Re-fetch with the commands in README.md, then `npm run build:catalog` and
 # `npm run build:priors`.
 /data-raw/
+
+# Vercel link metadata — holds projectId and orgId, and is machine-local.
+.vercel/
+.vercel
+.env*
