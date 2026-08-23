@@ -72,22 +72,31 @@ export interface ResolverConfig {
    * ~2.5k items, so a loose threshold finds a spurious neighbour for almost any
    * word — at 0.82 "opinion" matched onion and "light" matched light soy sauce.
    *
-   * Selected value 0.84, from a sweep of 0.80-0.96 on the en-US dev split under
-   * the pre-registered rule "maximise recall subject to false positives <= 0.3%".
-   * 0.82 reached 23.2% recall but 0.57% false positives and was rejected by the
-   * constraint, not by taste.
+   * Selected value 0.90, from the observed separation between fuzzy matches that
+   * are recoveries and ones that are mistakes:
    *
-   * Swept per locale as well, since Hindi arrives via transliteration and carries
-   * vowel-length variation English does not: hi-IN selects 0.82 independently.
-   * One value is kept because 0.84 satisfies the constraint in both locales
-   * (en-US 0.26%, hi-IN 0.05%); the alternative buys hi-IN +1.7pp recall while
-   * breaking the en-US bound, so it is a real trade rather than a free win.
+   *   REJECT   water -> wafer 0.893 | rap -> grape 0.867 | opinion -> onion 0.854
+   *   ACCEPT   brede -> bread 0.907 | panner -> paneer 0.922 | tomatoe -> tomato 0.971
+   *
+   * 0.90 is the boundary between those two groups. `resolver.threshold.test.ts`
+   * pins both sides, so a future change to the catalogue or the metric that
+   * reopens the gap fails loudly.
+   *
+   * An earlier value of 0.84 came from a sweep on MASSIVE against a
+   * false-positive bound. That sweep no longer discriminates: once unknown items
+   * pass through, every high-precision rule fires whether or not resolution
+   * succeeded, so fire rate stops responding to the threshold entirely. What the
+   * threshold now governs is *which item* you get, and MASSIVE has no item-level
+   * labels to score that against. Said plainly in scripts/tune-threshold.ts.
+   *
+   * Note that "dudh" -> "doodh" scores only 0.805 and is still resolved: long-vowel
+   * folding makes it an exact hit, so it never reaches the fuzzy path.
    */
   readonly fuzzyThreshold: number
 }
 
 export const BASELINE_CONFIG: ResolverConfig = {
-  fuzzyThreshold: 0.84,
+  fuzzyThreshold: 0.9,
   useFuzzy: false,
   usePhonetic: false,
   useNBest: false,
@@ -107,7 +116,7 @@ export const BASELINE_CONFIG: ResolverConfig = {
  * reproducible; see the ablation table in the README.
  */
 export const DEFAULT_CONFIG: ResolverConfig = {
-  fuzzyThreshold: 0.84,
+  fuzzyThreshold: 0.9,
   useFuzzy: true,
   usePhonetic: false,
   useNBest: true,
@@ -117,7 +126,7 @@ export const DEFAULT_CONFIG: ResolverConfig = {
 
 /** Every stage enabled. Used by the ablation harness, not by the app. */
 export const FULL_CONFIG: ResolverConfig = {
-  fuzzyThreshold: 0.84,
+  fuzzyThreshold: 0.9,
   useFuzzy: true,
   usePhonetic: true,
   useNBest: true,

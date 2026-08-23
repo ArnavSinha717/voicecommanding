@@ -177,9 +177,25 @@ function complementSuggestions(options: SuggestOptions, onList: ReadonlySet<stri
   return out
 }
 
+/**
+ * Categories a grocery list is actually about.
+ *
+ * Deals are the only suggestion available to a brand-new user with an empty
+ * list, so they are the first thing anyone sees. Ranking purely by discount put
+ * perfume and facial kits at the top, because non-food lines are discounted
+ * hardest. Food is weighted ahead of them rather than excluded — soap and
+ * toothpaste belong on a shopping list too, just not above the bread.
+ */
+const FOOD_CATEGORIES = new Set<Category>([
+  'produce', 'dairy', 'bakery', 'meat', 'pantry', 'frozen', 'beverages', 'snacks',
+])
+
 function dealSuggestions(onList: ReadonlySet<string>): Suggestion[] {
+  const weight = (entry: LexiconEntry): number =>
+    entry.discount * entry.prior * (FOOD_CATEGORIES.has(entry.category) ? 1 : 0.35)
+
   return LEXICON.filter((entry) => entry.discount >= 0.3 && !onList.has(entry.canonicalId))
-    .sort((a, b) => b.discount * b.prior - a.discount * a.prior)
+    .sort((a, b) => weight(b) - weight(a))
     .slice(0, 3)
     .map((entry) => ({
       canonicalId: entry.canonicalId,

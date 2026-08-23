@@ -110,6 +110,37 @@ const CATEGORY_MAP: ReadonlyArray<readonly [RegExp, Category]> = [
   [/beauty & hygiene|baby care/i, 'personal-care'],
 ]
 
+/**
+ * Sub-categories BigBasket stocks that are not shopping-list items.
+ *
+ * The retailer sells LED bulbs, dinner sets and cloth hangers alongside the
+ * groceries. Durables also carry the deepest discounts, so without this filter
+ * they dominated the deal suggestions — the first thing a new user saw was a
+ * light bulb. Identified from the data: every offender sat in one of these
+ * sub-categories.
+ */
+const NON_CONSUMABLE_SUBCATEGORIES =
+  /appliances|electrical|utensil|cookware|crockery|cutlery|storage & accessories|bins & bathroom|mops, brushes|stationery|pet food & accessories|garden|furnishing|kitchen accessories/i
+
+/**
+ * Range and marketing prefixes that precede the real item.
+ *
+ * "Heat to Eat - Cheesy Chicken Pasta" names a product range, not an item, and
+ * taking the segment before the dash yields "Heat To Eat". Kept deliberately
+ * short: these are stopwords, in the same spirit as the filler-word list, not
+ * invented product data.
+ */
+const RANGE_PREFIXES = new Set(
+  [
+    'heat to eat', 'ready to eat', 'ready to cook', 'combo', 'cool', 'value pack',
+    'gift pack', 'assorted', 'super saver', 'pack of', 'offer', 'special',
+  ]
+    // Compared against canonicalised keys, so they must be canonicalised too:
+    // canonicalKey drops "to" as a filler word, turning "heat to eat" into
+    // "heat eat". Comparing raw strings silently matched nothing.
+    .map((phrase) => canonicalKey(phrase)),
+)
+
 function toCategory(category: string, subCategory: string, type: string): Category {
   for (const [pattern, mapped] of SUB_CATEGORY_MAP) {
     if (pattern.test(subCategory) || pattern.test(type)) return mapped
@@ -195,8 +226,12 @@ const rows = parseCsv(readFileSync(SOURCE, 'utf8'))
 const byItem = new Map<string, Aggregate>()
 
 for (const row of rows) {
+  // Not a grocery item, however cheap it is.
+  if (NON_CONSUMABLE_SUBCATEGORIES.test(row.sub_category ?? '')) continue
+
   const head = headNoun(row.product ?? '')
   if (head === null) continue
+  if (RANGE_PREFIXES.has(head.key)) continue
   const { key } = head
 
   const category = toCategory(row.category ?? '', row.sub_category ?? '', row.type ?? '')

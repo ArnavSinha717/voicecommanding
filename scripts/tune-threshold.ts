@@ -1,7 +1,23 @@
 /**
  * Sweep the fuzzy-match threshold.
  *
- * PRE-REGISTERED OBJECTIVE, fixed before looking at any result:
+ * STATUS: this sweep no longer discriminates, and the reason is worth recording.
+ *
+ * It scores threshold values by fire rate. Once unknown items began passing
+ * through to the list, every high-precision rule fires whether or not resolution
+ * succeeded — so fire rate stopped responding to the threshold, and the sweep
+ * now returns an identical number for every value from 0.74 to 0.96.
+ *
+ * What the threshold actually governs is *which item* a phrase resolves to, and
+ * MASSIVE carries no item-level slot labels to score that against. The value is
+ * therefore pinned by observed separation instead: see the note on
+ * `fuzzyThreshold` in src/domain/resolve/resolver.ts, and the both-sided guard in
+ * resolver.threshold.test.ts.
+ *
+ * Kept because it is the evidence for that claim, and because restoring item
+ * labels — from a corpus that has them — would make it useful again.
+ *
+ * ORIGINAL OBJECTIVE, fixed before looking at any result:
  *   maximise in-domain recall subject to out-of-domain false positives <= 0.3%.
  *
  * The constraint comes first because the two move together — loosening the

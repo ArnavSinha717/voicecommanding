@@ -39,7 +39,7 @@ on `"take milk off the list"` (a removal with no removal verb), and on
 `"don't add milk"` (it adds the milk).
 
 This one uses an anchored grammar with slot extraction, an item resolver grounded
-in a 2,479-item catalogue derived from real retail data, and an LLM only for the
+in a 2,115-item catalogue derived from real retail data, and an LLM only for the
 tail — measured, so we know exactly how much each layer is worth.
 
 ---
@@ -219,19 +219,32 @@ public dataset or tuned against a held-out split.
 
 | Value | Source |
 |---|---|
-| Catalogue: 2,479 items, categories, ₹ prices, discounts | BigBasket, 27,555 real SKUs → `npm run build:catalog` |
+| Catalogue: 2,115 items, categories, ₹ prices, discounts | BigBasket, 27,555 real SKUs → `npm run build:catalog` |
 | Item frequency priors | log-normalised SKU count |
 | Replenishment priors (produce 12.6d, dairy 13.7d, household 26.4d) | Instacart, 32.4M order-product rows → `npm run build:priors` |
 | Category complements (lift) | Instacart basket co-occurrence, min. support 200 |
 | Intent rule confidences | **measured precision** on MASSIVE train, not hand-set |
-| Fuzzy match threshold (0.84) | swept 0.74–0.96 → `npm run tune:threshold` |
+| Fuzzy match threshold (0.90) | boundary between observed recoveries and mis-resolutions |
 | Verb inventories | MASSIVE frequency (remove 95, delete 58, erase 11…) |
 | Framing prefixes | MASSIVE frequency ("please" 962, "can you" 436) |
 
-The fuzzy threshold sweep used a **pre-registered rule**, fixed before looking at
-any result: *maximise recall subject to false positives ≤ 0.3%*. Notably 0.82
-scored higher recall (23.2% vs 17.0%) and was rejected **by the constraint, not by
-taste** — which is the constraint doing its job.
+The fuzzy threshold is pinned at the boundary between fuzzy matches that recover a
+near miss and ones that answer confidently with the wrong item:
+
+```
+REJECT   water → wafer 0.893  ·  rap → grape 0.867  ·  opinion → onion 0.854
+ACCEPT   brede → bread 0.907  ·  panner → paneer 0.922  ·  tomatoe → tomato 0.971
+```
+
+A mis-resolution is worse than no resolution, because the open-vocabulary path
+would otherwise have added exactly what was said. Both sides are pinned by tests.
+
+`npm run tune:threshold` originally derived this from a sweep against a
+pre-registered false-positive bound. It no longer discriminates, and the script
+says so: once unknown items pass through, every high-precision rule fires whether
+or not resolution succeeded, so fire rate stopped responding to the threshold.
+What it actually governs is *which item* you get, and MASSIVE carries no
+item-level labels to score that against.
 
 ### The one hand-authored file
 
@@ -268,7 +281,7 @@ Hinglish speaker's list into four.
 ## Testing
 
 ```bash
-npm test              # 263 tests
+npm test              # 269 tests
 npm run verify        # typecheck + lint + test + build
 ```
 
