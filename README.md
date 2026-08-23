@@ -3,7 +3,7 @@
 Add to your shopping list by speaking, in English or Hindi. Works offline, works
 without a microphone, and works when the AI is unavailable.
 
-**Live:** https://unthinkable-22sf18ikl-arnavsinha1602-3835s-projects.vercel.app
+**Live:** https://unthinkable-alpha.vercel.app
 
 ```bash
 npm install
