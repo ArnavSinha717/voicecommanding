@@ -50,12 +50,24 @@ export function demoState(now: number): PersistedState {
     confidence: 1,
   }))
 
-  // Spaced so the posterior lands near a real cadence and the gap since the last
-  // purchase is long enough for the item to read as genuinely due.
+  /*
+   * Spaced to exercise both halves of the recommender.
+   *
+   * curd, egg and onion are far enough past their cadence to read as genuinely
+   * out. Bananas are the interesting one: bought two days ago on a four-day
+   * cycle, so they are NOT out now and a reactive recommender says nothing about
+   * them — but they will be gone before this shopper is next in a shop, which is
+   * the whole reason the horizon exists.
+   *
+   * The distinct days across all four also give the trip model something real to
+   * learn a cadence from, so the panel reports a shopping rhythm rather than the
+   * population default.
+   */
   const history: Record<string, number[]> = {
     curd: [now - 26 * DAY, now - 19 * DAY, now - 12 * DAY],
     egg: [now - 31 * DAY, now - 22 * DAY, now - 14 * DAY],
     onion: [now - 40 * DAY, now - 26 * DAY, now - 13 * DAY],
+    banana: [now - 14 * DAY, now - 10 * DAY, now - 6 * DAY, now - 2 * DAY],
   }
 
   return { items, history, language: 'en-IN', schemaVersion: 1 }

@@ -391,6 +391,7 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
 
         <Suggestions
           suggestions={list.suggestions}
+          horizon={list.horizon}
           onAdd={(suggestion) =>
             list.dispatch({
               kind: 'add',

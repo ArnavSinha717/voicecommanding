@@ -29,6 +29,7 @@ import { isCompositional, planShoppingList, type Proposal } from '../domain/agen
 import { normalize } from '../domain/parser/normalize'
 import type { Command, ItemSource } from '../domain/types'
 import { suggest, type PurchaseHistory, type Suggestion } from '../domain/recommend/suggest'
+import { estimateHorizon, type Horizon } from '../domain/recommend/horizon'
 
 /**
  * How often the suggestion clock advances.
@@ -80,6 +81,8 @@ export interface ShoppingListApi {
   readonly lastError: SpeechError | null
   readonly toasts: readonly Toast[]
   readonly suggestions: readonly Suggestion[]
+  /** How long until the next shop, and whether that is learned or assumed. */
+  readonly horizon: Horizon
   readonly search: SearchState
   readonly clearSearch: () => void
   readonly agent: AgentState
@@ -445,14 +448,24 @@ export function useShoppingList(options: Options = {}): ShoppingListApi {
     return () => clearInterval(timer)
   }, [])
 
+  /*
+   * How long until this shopper is next in a shop.
+   *
+   * Derived here rather than inside `suggest` so the interface can state the
+   * assumption it is reasoning from. A prediction whose horizon is invisible is
+   * indistinguishable from a guess.
+   */
+  const horizon = useMemo(() => estimateHorizon(history, now), [history, now])
+
   const suggestions = useMemo(
-    () => suggest({ items: state.items, history, now, limit: 4 }),
-    [state.items, history, now],
+    () => suggest({ items: state.items, history, now, limit: 6, horizon }),
+    [state.items, history, now, horizon],
   )
 
   return {
     state,
     suggestions,
+    horizon,
     search,
     clearSearch,
     agent,

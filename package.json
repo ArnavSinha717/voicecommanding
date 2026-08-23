@@ -18,7 +18,8 @@
     "test:leak": "vitest run tests/config.leak.test.ts",
     "verify": "npm run typecheck && npx oxlint src scripts api && npm test && npm run build",
     "deploy": "vercel deploy --prod",
-    "build:priors": "vite-node scripts/build-priors.ts"
+    "build:priors": "vite-node scripts/build-priors.ts",
+    "tune:prior": "vite-node scripts/tune-prior.ts"
   },
   "dependencies": {
     "double-metaphone": "^2.0.1",

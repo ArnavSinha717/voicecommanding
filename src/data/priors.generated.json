@@ -6,6 +6,7 @@
     "sample": "every 20th user by user_id (deterministic)",
     "replenishment": "Gamma(alpha,beta) over purchase rate, method-of-moments fit to inter-purchase gaps per category; gaps capped at 365 days",
     "complements": "category co-occurrence lift within a basket, minimum support 200 baskets",
+    "tripCadence": "median over users of each user median days_since_prior_order; users with >= 3 gaps; gaps of exactly 30 dropped as censored",
     "basketsAnalysed": 161758
   },
   "replenishment": {
@@ -86,6 +87,14 @@
       "sd": 35.75,
       "n": 2609
     }
+  },
+  "tripCadence": {
+    "alpha": 3.8561,
+    "beta": 0.3657,
+    "medianDays": 9,
+    "p25Days": 7,
+    "p75Days": 14,
+    "users": 169230
   },
   "complements": [
     {

@@ -65,7 +65,7 @@ graph TD
         HOOK --> PARSE[Parser<br/>grammar + slots]
         PARSE --> RESOLVE[Resolver<br/>catalogue matching]
         RESOLVE --> REDUCE[Reducer<br/>list state + undo]
-        HOOK --> SUGGEST[Suggestions<br/>Bayesian replenishment]
+        HOOK --> SUGGEST[Suggestions<br/>Bayesian replenishment<br/>over a learned horizon]
     end
 
     subgraph Ports
@@ -253,6 +253,97 @@ The code stays so the ablation row reproduces.
 
 ---
 
+## The recommender predicts rather than reacts
+
+Most shopping-list suggestions answer *"what are you out of?"*. That is the one
+question whose answer is useless at the moment it is asked — you are standing in
+the shop, and anything you have already run out of, you ran out of days ago.
+
+This one answers **"what will you run out of before you are next here?"**
+
+Both questions run through the same Gamma-Poisson posterior. The difference is
+the horizon they are evaluated over, and it changes which items speak at all:
+
+| item | cycle | last bought | P(out now) | reactive | P(out by next shop) | predictive |
+|---|---|---|---|---|---|---|
+| milk | 5d | 2 days ago | 33% | *silent* | **83%** | **suggests** |
+| yoghurt | 6d | 6 days ago | 63% | suggests | 88% | suggests |
+| rice | 42d | 30 days ago | 51% | suggests | 59% | suggests |
+| ketchup | 107d | 100 days ago | 61% | suggests | 63% | suggests |
+
+Milk is the case worth catching and the only one a reactive recommender misses.
+Long-cycle items barely move under the same horizon, because a 42-day cycle
+dwarfs a 7-day week — that falls out of the exponential, nothing special-cases it.
+
+**The horizon is modelled, not assumed.** Shopping trips are a Poisson process
+exactly as purchases are, so the same conjugate update runs one level up: a
+population prior, pulled toward this shopper's own rhythm as they accumulate
+trips. Someone who shops twice a week and someone who does a monthly stock-up get
+different answers from the same code, and the interface states which basis it is
+speaking from — *"You shop about every 5 days"* once it has evidence, *"Assuming
+you shop about every 9 days, like most shoppers"* before that.
+
+The panel groups by *why*, because the three groups are different claims:
+**Probably out** (your history), **Before your next shop** (your history plus your
+cadence), **Worth restocking** (population behaviour, when there is no history).
+Each row draws its own evidence — elapsed time, the point the item is more likely
+gone than not, and where the next trip falls.
+
+### A units bug the extension exposed
+
+Building the horizon meant re-reading the posterior, which had a real defect.
+`fitGamma` fits β to the *gap* distribution, so β carries units of 1/day — but
+`posteriorRate` used it as **pseudo-exposure in days**, where it was ≈0.03. The
+prior added ~0.7 phantom purchases and essentially no phantom time, so every
+cycle came out short. On held-out Instacart users it predicted too short **51.9%**
+of the time.
+
+`npm run tune:prior` replaces it with the dimensionally coherent form and sweeps
+the prior strength over **47,828 real purchase sequences**, confirming once on a
+disjoint **47,686**. Both slices are disjoint from the users the priors were
+fitted on. Scored on mean |log(predicted / actual)| rather than absolute error,
+because cycles here span a day to a year and the model is used to decide ratios.
+
+| purchases in history | 3 | 4–5 | 6–9 | 10–19 | 20+ | overall |
+|---|---|---|---|---|---|---|
+| change vs. previous | **+13.4%** | +5.4% | +2.2% | −0.5% | −1.7% | **+3.9%** |
+
+MAE 14.76d → 14.37d, and the short-bias falls from 51.9% to 46.2%.
+
+### The pre-registered rule failed, and that is recorded
+
+The rule used for the parser ablation — *improve one slice by ≥2 points without
+degrading any other by more than 1* — **fails here at every prior strength
+tested**, including the weakest. That is not a tuning problem. Trading a large
+gain on thin evidence for a small loss on thick evidence is what shrinkage *is*,
+so a rule forbidding any slice from losing forbids the technique outright.
+
+It was written for parser slices, which are **languages**: improving English by
+regressing Hindi fails a group of people permanently. These slices are
+**stages every shopper passes through** — everyone starts at three purchases, some
+arrive at twenty. Refusing all shrinkage to protect the deepest slice would make
+the app measurably worse for every user during the period they are new, which is
+the only period this app has ever been used in.
+
+So the rule is reported as failed rather than quietly dropped, and replaced with a
+stated stopping rule: *raise the prior while a step returns more overall than it
+costs the deepest slice*. That lands on 1.5 — the knee, not the peak. The peak
+(strength 3) is 0.2 points better overall and costs the deepest slice 0.8 more.
+
+A test asserts the model **does not** fully converge, so anyone strengthening the
+prior has to re-run the sweep rather than discover the regression in production.
+
+### `add_to_cart_order` was investigated and dropped
+
+Instacart records the sequence items enter a basket, which sounded like a store
+route worth ordering the list by. It is not. Mean normalised basket position by
+department spans only **0.453 (dairy) to 0.569 (personal care)** across 6M rows —
+everything clusters at 0.5. In hindsight it is obvious: Instacart is *online*
+ordering, so nobody walks a store and the sequence reflects how the app presents
+categories. The differences are real at that n and far too small to act on.
+
+---
+
 ## Every number has a source
 
 There are no invented constants in this codebase. Each is either derived from a
@@ -263,6 +354,8 @@ public dataset or tuned against a held-out split.
 | Catalogue: 2,115 items, categories, ₹ prices, discounts | BigBasket, 27,555 real SKUs → `npm run build:catalog` |
 | Item frequency priors | log-normalised SKU count |
 | Replenishment priors (produce 12.6d, dairy 13.7d, household 26.4d) | Instacart, 32.4M order-product rows → `npm run build:priors` |
+| Prior strength (1.5 purchases) | swept on 47,828 held-out Instacart sequences, confirmed on 47,686 more → `npm run tune:prior` |
+| Trip cadence prior (9 days) | median over 169,230 Instacart users of their own median gap between orders |
 | Category complements (lift) | Instacart basket co-occurrence, min. support 200 |
 | Intent rule confidences | **measured precision** on MASSIVE train, not hand-set |
 | Fuzzy match threshold (0.90) | boundary between observed recoveries and mis-resolutions |
@@ -468,14 +561,14 @@ src/
     parser/        normalisation, intent grammar, LLM fallback
     resolve/       phonetic index, distance metrics, linear scorer
     list/          reducer, undo, unit ontology
-    recommend/     Bayesian replenishment, complements, deals
+    recommend/     Bayesian replenishment, trip-cadence horizon, staples
     agent/         compositional planning, read-only tools
   ports/           SpeechPort · CatalogPort · LlmPort · StoragePort
   adapters/        Web Speech, Fake, Open Food Facts, localStorage, proxy
   data/            generated artifacts + the one hand-authored alias file
   ui/              React
 api/llm.ts         server-side model proxy
-scripts/           eval harness, ablation, dataset derivation, threshold sweep
+scripts/           eval harness, ablation, dataset derivation, threshold + prior sweeps
 ```
 
 Dependencies are deliberately minimal: React, Zod, `double-metaphone`. Styling is

@@ -117,6 +117,8 @@ console.log('pass 1/3  orders.csv — sampling users and building a day timeline
 
 const orderMeta = new Map<number, OrderMeta>()
 const cumulativeDays = new Map<number, number>()
+/** Every user's gaps between shopping trips, for the trip-cadence prior. */
+const tripGaps = new Map<number, number[]>()
 let orderRows = 0
 
 for await (const line of lines('orders.csv')) {
@@ -124,6 +126,23 @@ for await (const line of lines('orders.csv')) {
   // order_id,user_id,eval_set,order_number,order_dow,order_hour_of_day,days_since_prior_order
   const parts = line.split(',')
   const userId = Number(parts[1])
+
+  /*
+   * Trip cadence is collected across ALL users, not the sampled fifth.
+   * It costs one number per row and the whole point of this prior is to stand in
+   * for a shopper we know nothing about, so it should be as tight as the data allows.
+   *
+   * 30 is discarded rather than kept: it is Instacart's censoring cap, not an
+   * observed gap. 11.5% of all gaps sit at exactly 30, and keeping them drags the
+   * per-user median from 9 days to 13 — a four-day error invented by the cap.
+   */
+  const gap = parts[6] === '' ? Number.NaN : Number(parts[6])
+  if (Number.isFinite(gap) && gap < 30) {
+    const seen = tripGaps.get(userId)
+    if (seen === undefined) tripGaps.set(userId, [gap])
+    else seen.push(gap)
+  }
+
   if (userId % USER_SAMPLE_DIVISOR !== 0) continue
 
   const orderId = Number(parts[0])
@@ -350,6 +369,43 @@ const reorderRates = [...reorderTally.entries()]
   }))
   .sort((a, b) => b.rate - a.rate)
 
+/*
+ * Trip-cadence prior: how many days pass between one shopping trip and the next.
+ *
+ * The horizon a suggestion is judged over. Without it the recommender can only
+ * answer "are you out of this now", which is the one moment it is already too
+ * late to be useful — you are standing in the shop.
+ *
+ * Summarised per user first and then across users, deliberately. Pooling every
+ * gap answers a different question: frequent shoppers contribute proportionally
+ * more gaps, so the pooled median (7.0 days) is length-biased toward them. What
+ * a new shopper needs is the median over *users*, each counted once.
+ */
+const userCadences = [...tripGaps.values()]
+  .filter((gaps) => gaps.length >= 3)
+  .map((gaps) => {
+    const sorted = [...gaps].sort((a, b) => a - b)
+    return sorted[Math.floor(sorted.length / 2)]
+  })
+  .sort((a, b) => a - b)
+
+/*
+ * Fitted with the same method-of-moments Gamma used for item replenishment, so a
+ * shopper's own cadence updates through exactly the machinery their milk does.
+ * One model, applied at two levels.
+ */
+const cadenceFit = fitGamma(userCadences)
+if (cadenceFit === null) throw new Error('trip cadence did not fit — check orders.csv')
+
+const tripCadence = {
+  alpha: cadenceFit.alpha,
+  beta: cadenceFit.beta,
+  medianDays: userCadences[Math.floor(userCadences.length / 2)],
+  p25Days: userCadences[Math.floor(userCadences.length * 0.25)],
+  p75Days: userCadences[Math.floor(userCadences.length * 0.75)],
+  users: userCadences.length,
+}
+
 const output = {
   _source: 'Instacart Online Grocery Shopping Dataset 2017 (Kaggle mirror psparks/instacart-market-basket-analysis, CC0-1.0)',
   _licence: "Mirror is published CC0-1.0; Instacart's original release terms are non-commercial. The stricter reading is assumed.",
@@ -358,9 +414,12 @@ const output = {
     sample: `every ${USER_SAMPLE_DIVISOR}th user by user_id (deterministic)`,
     replenishment: 'Gamma(alpha,beta) over purchase rate, method-of-moments fit to inter-purchase gaps per category; gaps capped at 365 days',
     complements: 'category co-occurrence lift within a basket, minimum support 200 baskets',
+    tripCadence:
+      'median over users of each user median days_since_prior_order; users with >= 3 gaps; gaps of exactly 30 dropped as censored',
     basketsAnalysed: basketTotal,
   },
   replenishment,
+  tripCadence,
   complements: complements.slice(0, 40),
   reorderRates,
 }
@@ -373,6 +432,9 @@ for (const [category, fit] of Object.entries(replenishment)) {
   if (fit === null) continue
   console.log(`  ${category.padEnd(15)} ${fit.meanDays.toFixed(1)} ± ${fit.sd.toFixed(1)} days   (alpha=${fit.alpha}, beta=${fit.beta}, n=${fit.n.toLocaleString()})`)
 }
+console.log(
+  `\ntrip cadence: median ${tripCadence.medianDays}d (p25 ${tripCadence.p25Days}d, p75 ${tripCadence.p75Days}d) over ${tripCadence.users.toLocaleString()} users`,
+)
 console.log(`\nreorder rates: ${reorderRates.length} items with >= ${MIN_PURCHASES} purchases`)
 console.log('most-rebought:')
 for (const r of reorderRates.slice(0, 10)) {

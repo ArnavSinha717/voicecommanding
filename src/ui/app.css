@@ -781,8 +781,10 @@ body {
   width: 2px;
   height: 10px;
   border-radius: var(--r-full);
-  background: var(--muted);
-  opacity: 0.55;
+  /* Dark rather than grey: this mark has to stay legible sitting on top of the
+     amber overdue fill as well as on the pale empty track. */
+  background: var(--text);
+  opacity: 0.45;
 }
 
 /* The uncertainty badge was a bare "?" glyph, which read as a broken icon. */
@@ -794,4 +796,27 @@ body {
   background: color-mix(in srgb, var(--warm) 18%, transparent);
   color: var(--warm);
   cursor: help;
+}
+
+/*
+ * The next expected shopping trip, drawn on the cycle bar.
+ *
+ * Dashed rather than solid so it reads as a different kind of thing from the
+ * run-out marker: one is a property of the item, the other of the shopper. Drawn
+ * with a repeating gradient because a dashed border on a 4px-tall bar renders as
+ * a solid line. When it sits to the right of the solid marker, the argument for
+ * buying today is visible without reading anything.
+ */
+.cycle-horizon {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 12px;
+  transform: translateX(-1px);
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--primary) 0 3px,
+    transparent 3px 5px
+  );
+  opacity: 0.9;
 }
