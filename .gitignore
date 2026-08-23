@@ -1,0 +1,43 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Submission guidelines require excluding these explicitly
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+coverage/
+*.local
+
+# Ollama/eval scratch output — regenerable, not source
+/eval-output/
+
+# Raw source datasets — 1.4GB, downloaded by scripts, never committed.
+# The *derived* artifacts (src/data/*.generated.json) are committed instead:
+# they are small, reviewable, and what the app actually ships.
+# Re-fetch with the commands in README.md, then `npm run build:catalog` and
+# `npm run build:priors`.
+/data-raw/

@@ -1,0 +1,530 @@
+/*
+ * Design tokens and layout.
+ *
+ * Plain CSS with custom properties rather than a utility framework: the
+ * submission guidelines ask for minimal dependencies, and a stylesheet this size
+ * does not need a build step of its own.
+ *
+ * Light is the base and dark is a media-query override, so a viewer whose system
+ * preference is unknown still gets a fully painted page.
+ */
+
+:root {
+  --bg: #fbfaf8;
+  --surface: #ffffff;
+  --border: #e6e2db;
+  --text: #1c1a17;
+  --muted: #6f6961;
+  --accent: #1f6f4f;
+  --accent-soft: #e8f2ec;
+  --danger: #a8331f;
+  --shadow: 0 1px 2px rgb(28 26 23 / 6%), 0 8px 24px rgb(28 26 23 / 6%);
+  --radius: 12px;
+  --tap: 44px; /* WCAG 2.5.5 minimum target size */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16150f;
+    --surface: #211f19;
+    --border: #35322a;
+    --text: #f2efe8;
+    --muted: #a49d92;
+    --accent: #6ec49a;
+    --accent-soft: #23372e;
+    --danger: #e08a76;
+    --shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 8px 24px rgb(0 0 0 / 30%);
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  max-width: 34rem;
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1rem 0;
+  /* Leaves room for the fixed composer plus the iOS home indicator. */
+  padding-bottom: calc(7rem + env(safe-area-inset-bottom));
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------------------------------------------------------------- header */
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+}
+
+.header h1 { margin: 0; font-size: 1.35rem; letter-spacing: -0.01em; }
+.subtitle { margin: 0.15rem 0 0; color: var(--muted); font-size: 0.875rem; }
+
+.language select {
+  min-height: var(--tap);
+  padding: 0 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+/* ------------------------------------------------------------------ list */
+
+.list { flex: 1; }
+
+.group { margin-bottom: 1.25rem; }
+
+.group h2 {
+  margin: 0 0 0.4rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.group ul { list-style: none; margin: 0; padding: 0; }
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 0.4rem;
+  padding-right: 0.25rem;
+  box-shadow: var(--shadow);
+}
+
+.item label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.7rem 0.5rem 0.7rem 0.75rem;
+  min-height: var(--tap);
+  cursor: pointer;
+}
+
+.item input[type='checkbox'] {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.item .name { flex: 1; }
+
+.item.checked .name {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.quantity {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  background: var(--accent-soft);
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+}
+
+.uncertain {
+  color: var(--danger);
+  font-weight: 700;
+  cursor: help;
+}
+
+.remove {
+  min-width: var(--tap);
+  min-height: var(--tap);
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 1.35rem;
+  line-height: 1;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.remove:hover { color: var(--danger); }
+
+/* ----------------------------------------------------------- empty state */
+
+.empty { padding: 2.5rem 0.5rem; text-align: center; color: var(--muted); }
+.empty p { margin: 0 0 1rem; }
+
+.examples { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+
+.examples button {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0.6rem 0.9rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.examples button:hover { border-style: solid; border-color: var(--accent); }
+
+/* -------------------------------------------------- transcript & toasts */
+
+.transcript {
+  min-height: 1.5rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  font-style: italic;
+}
+
+.toasts {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(7.5rem + env(safe-area-inset-bottom));
+  width: min(32rem, calc(100% - 2rem));
+  display: grid;
+  gap: 0.4rem;
+  z-index: 10;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  font-size: 0.9375rem;
+}
+
+.toast span { flex: 1; }
+.toast.clarify { border-color: var(--danger); }
+
+.toast button {
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 600;
+  min-height: var(--tap);
+  padding: 0 0.5rem;
+  cursor: pointer;
+}
+
+.toast .dismiss { color: var(--muted); font-weight: 400; font-size: 1.1rem; }
+
+/* -------------------------------------------------------------- composer */
+
+.composer {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(34rem, 100%);
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--border);
+}
+
+.composer form { flex: 1; display: flex; gap: 0.4rem; }
+
+.composer input[type='text'] {
+  flex: 1;
+  min-height: var(--tap);
+  padding: 0 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  /* Below 16px, iOS Safari zooms the viewport on focus. */
+  font-size: 16px;
+}
+
+.composer .send {
+  min-height: var(--tap);
+  padding: 0 0.9rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--bg);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.composer .send:disabled { opacity: 0.4; cursor: default; }
+
+.mic {
+  position: relative;
+  width: 3.25rem;
+  height: 3.25rem;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.mic:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+.mic .level {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.25;
+  transition: transform 80ms linear;
+}
+
+.mic.idle .level { display: none; }
+.mic .glyph { position: relative; }
+
+.mic.listening { animation: pulse 1.6s ease-in-out infinite; }
+.mic.error { background: var(--danger); }
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
+  50% { box-shadow: 0 0 0 0.6rem transparent; }
+}
+
+/* Honour a reduced-motion preference: the pulse is decorative, and the level
+   ring already conveys the same information without animation. */
+@media (prefers-reduced-motion: reduce) {
+  .mic.listening { animation: none; }
+  .mic .level { transition: none; }
+}
+
+/* --------------------------------------------------------------- notices */
+
+.notice {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.notice.error { color: var(--danger); }
+.notice.subtle { opacity: 0.7; font-size: 0.8125rem; }
+
+:where(button, input, select):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------- suggestions */
+
+.suggestions { margin: 0 0 1rem; }
+
+.suggestions h2 {
+  margin: 0 0 0.4rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.suggestions ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.suggestions button {
+  width: 100%;
+  min-height: var(--tap);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.suggestions button:hover { border-color: var(--accent); }
+.suggestion-name { font-weight: 600; }
+.suggestion-reason { font-size: 0.8125rem; color: var(--muted); }
+
+/* ------------------------------------------------------- search results */
+
+.results {
+  margin: 0 0 1rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.results header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.results h2 { margin: 0; font-size: 0.9375rem; }
+
+.results header button {
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.875rem;
+  min-height: var(--tap);
+  cursor: pointer;
+}
+
+.results ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; }
+
+.results ul button {
+  width: 100%;
+  min-height: var(--tap);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.results ul button:hover { border-color: var(--accent); }
+
+.result-name { font-weight: 600; }
+
+.result-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.result-meta .price { font-variant-numeric: tabular-nums; }
+.result-meta .price.unknown { font-style: italic; opacity: 0.75; }
+.result-meta .deal { color: var(--accent); font-weight: 600; }
+
+/* Skeletons keep the layout stable while results load. */
+.skeletons { display: grid; gap: 0.35rem; }
+
+.skeletons li {
+  height: var(--tap);
+  border-radius: var(--radius);
+  background: linear-gradient(90deg, var(--border) 25%, var(--surface) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletons li { animation: none; }
+}
+
+/* --------------------------------------------------- agent proposal card */
+
+.proposal {
+  margin: 0 0 1rem;
+  padding: 0.75rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+}
+
+.proposal h2 { margin: 0 0 0.5rem; font-size: 0.9375rem; }
+.proposal ul { list-style: none; margin: 0 0 0.75rem; padding: 0; display: grid; gap: 0.3rem; }
+
+.proposal li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.proposed-name { font-weight: 600; }
+.proposed-reason { font-size: 0.8125rem; color: var(--muted); }
+
+.proposal-actions { display: flex; gap: 0.5rem; }
+
+.proposal-actions button {
+  min-height: var(--tap);
+  flex: 1;
+  padding: 0 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.proposal-actions .accept {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.proposal .notice button {
+  margin-left: 0.5rem;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}

@@ -1,0 +1,332 @@
+{
+  "_source": "Instacart Online Grocery Shopping Dataset 2017 (Kaggle mirror psparks/instacart-market-basket-analysis, CC0-1.0)",
+  "_licence": "Mirror is published CC0-1.0; Instacart's original release terms are non-commercial. The stricter reading is assumed.",
+  "_generatedBy": "scripts/build-priors.ts",
+  "_method": {
+    "sample": "every 20th user by user_id (deterministic)",
+    "replenishment": "Gamma(alpha,beta) over purchase rate, method-of-moments fit to inter-purchase gaps per category; gaps capped at 365 days",
+    "complements": "category co-occurrence lift within a basket, minimum support 200 baskets",
+    "basketsAnalysed": 161758
+  },
+  "replenishment": {
+    "bakery": {
+      "alpha": 0.7166,
+      "beta": 0.0348,
+      "meanDays": 20.61,
+      "sd": 24.34,
+      "n": 36939
+    },
+    "personal-care": {
+      "alpha": 0.6334,
+      "beta": 0.0241,
+      "meanDays": 26.31,
+      "sd": 33.06,
+      "n": 17698
+    },
+    "snacks": {
+      "alpha": 0.7608,
+      "beta": 0.0429,
+      "meanDays": 17.74,
+      "sd": 20.34,
+      "n": 61290
+    },
+    "pantry": {
+      "alpha": 0.8763,
+      "beta": 0.0574,
+      "meanDays": 15.27,
+      "sd": 16.31,
+      "n": 84928
+    },
+    "beverages": {
+      "alpha": 0.7525,
+      "beta": 0.0462,
+      "meanDays": 16.3,
+      "sd": 18.79,
+      "n": 67365
+    },
+    "household": {
+      "alpha": 0.7647,
+      "beta": 0.0289,
+      "meanDays": 26.44,
+      "sd": 30.23,
+      "n": 19940
+    },
+    "produce": {
+      "alpha": 0.9448,
+      "beta": 0.0751,
+      "meanDays": 12.59,
+      "sd": 12.95,
+      "n": 109925
+    },
+    "dairy": {
+      "alpha": 0.9592,
+      "beta": 0.0703,
+      "meanDays": 13.65,
+      "sd": 13.93,
+      "n": 98175
+    },
+    "frozen": {
+      "alpha": 0.7509,
+      "beta": 0.0391,
+      "meanDays": 19.19,
+      "sd": 22.14,
+      "n": 49978
+    },
+    "meat": {
+      "alpha": 0.7418,
+      "beta": 0.0389,
+      "meanDays": 19.07,
+      "sd": 22.15,
+      "n": 49461
+    },
+    "other": {
+      "alpha": 0.5412,
+      "beta": 0.0206,
+      "meanDays": 26.3,
+      "sd": 35.75,
+      "n": 2609
+    }
+  },
+  "complements": [
+    {
+      "a": "household",
+      "b": "personal-care",
+      "lift": 1.904,
+      "support": 7059
+    },
+    {
+      "a": "other",
+      "b": "personal-care",
+      "lift": 1.5273,
+      "support": 1019
+    },
+    {
+      "a": "bakery",
+      "b": "meat",
+      "lift": 1.4115,
+      "support": 22397
+    },
+    {
+      "a": "household",
+      "b": "other",
+      "lift": 1.3508,
+      "support": 1006
+    },
+    {
+      "a": "bakery",
+      "b": "frozen",
+      "lift": 1.336,
+      "support": 21417
+    },
+    {
+      "a": "frozen",
+      "b": "meat",
+      "lift": 1.3116,
+      "support": 27529
+    },
+    {
+      "a": "frozen",
+      "b": "personal-care",
+      "lift": 1.2831,
+      "support": 10768
+    },
+    {
+      "a": "frozen",
+      "b": "other",
+      "lift": 1.2677,
+      "support": 2137
+    },
+    {
+      "a": "beverages",
+      "b": "household",
+      "lift": 1.2656,
+      "support": 15585
+    },
+    {
+      "a": "bakery",
+      "b": "personal-care",
+      "lift": 1.2584,
+      "support": 7984
+    },
+    {
+      "a": "bakery",
+      "b": "snacks",
+      "lift": 1.2467,
+      "support": 24108
+    },
+    {
+      "a": "bakery",
+      "b": "pantry",
+      "lift": 1.2406,
+      "support": 32470
+    },
+    {
+      "a": "other",
+      "b": "snacks",
+      "lift": 1.2397,
+      "support": 2521
+    },
+    {
+      "a": "frozen",
+      "b": "snacks",
+      "lift": 1.2356,
+      "support": 31606
+    },
+    {
+      "a": "meat",
+      "b": "pantry",
+      "lift": 1.224,
+      "support": 41946
+    },
+    {
+      "a": "other",
+      "b": "pantry",
+      "lift": 1.2226,
+      "support": 3365
+    },
+    {
+      "a": "bakery",
+      "b": "household",
+      "lift": 1.2217,
+      "support": 8652
+    },
+    {
+      "a": "personal-care",
+      "b": "snacks",
+      "lift": 1.2205,
+      "support": 12356
+    },
+    {
+      "a": "meat",
+      "b": "snacks",
+      "lift": 1.2205,
+      "support": 30902
+    },
+    {
+      "a": "bakery",
+      "b": "other",
+      "lift": 1.2178,
+      "support": 1552
+    },
+    {
+      "a": "frozen",
+      "b": "pantry",
+      "lift": 1.214,
+      "support": 42027
+    },
+    {
+      "a": "bakery",
+      "b": "dairy",
+      "lift": 1.2119,
+      "support": 36164
+    },
+    {
+      "a": "beverages",
+      "b": "personal-care",
+      "lift": 1.1988,
+      "support": 13226
+    },
+    {
+      "a": "frozen",
+      "b": "household",
+      "lift": 1.1885,
+      "support": 11133
+    },
+    {
+      "a": "meat",
+      "b": "other",
+      "lift": 1.1854,
+      "support": 1978
+    },
+    {
+      "a": "household",
+      "b": "snacks",
+      "lift": 1.1791,
+      "support": 13324
+    },
+    {
+      "a": "beverages",
+      "b": "other",
+      "lift": 1.1759,
+      "support": 2606
+    },
+    {
+      "a": "pantry",
+      "b": "personal-care",
+      "lift": 1.173,
+      "support": 16072
+    },
+    {
+      "a": "dairy",
+      "b": "meat",
+      "lift": 1.1729,
+      "support": 45824
+    },
+    {
+      "a": "meat",
+      "b": "personal-care",
+      "lift": 1.1638,
+      "support": 9668
+    },
+    {
+      "a": "beverages",
+      "b": "snacks",
+      "lift": 1.1599,
+      "support": 39004
+    },
+    {
+      "a": "pantry",
+      "b": "snacks",
+      "lift": 1.1509,
+      "support": 48066
+    },
+    {
+      "a": "household",
+      "b": "pantry",
+      "lift": 1.1479,
+      "support": 17557
+    },
+    {
+      "a": "dairy",
+      "b": "frozen",
+      "lift": 1.145,
+      "support": 45194
+    },
+    {
+      "a": "dairy",
+      "b": "other",
+      "lift": 1.1434,
+      "support": 3588
+    },
+    {
+      "a": "meat",
+      "b": "produce",
+      "lift": 1.1426,
+      "support": 49674
+    },
+    {
+      "a": "dairy",
+      "b": "pantry",
+      "lift": 1.1358,
+      "support": 73195
+    },
+    {
+      "a": "bakery",
+      "b": "beverages",
+      "lift": 1.1185,
+      "support": 23570
+    },
+    {
+      "a": "beverages",
+      "b": "frozen",
+      "lift": 1.1185,
+      "support": 31178
+    },
+    {
+      "a": "bakery",
+      "b": "produce",
+      "lift": 1.1077,
+      "support": 36781
+    }
+  ]
+}
