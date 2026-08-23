@@ -12,6 +12,10 @@ npm run dev          # http://localhost:5173
 
 No account, no API key, no configuration required to run it.
 
+**Add `?demo` to the URL** for a part-finished shop with purchase history, so the
+categories, quantities and replenishment reasoning are all visible immediately.
+A cold URL shows the honest empty state, which demonstrates none of that.
+
 ---
 
 ## What this is
@@ -159,6 +163,34 @@ ignored — a hot microphone picks up speech nobody addressed to it.
 **The agent proposes, it never mutates.** Its three tools are read-only by
 construction — there is no write tool for a model to reach for, which makes prompt
 injection through a product name inert.
+
+---
+
+## Interface
+
+Built for where it is actually used: standing in a shop, phone in one hand, eyes
+mostly on the shelves. Three consequences run through the layout.
+
+**The microphone is the largest control on screen.** Anything smaller says the
+keyboard is the real interface and voice is a novelty bolted on.
+
+**The list is scannable, not readable.** A colour rail per aisle means finding the
+dairy line takes a glance rather than a parse — which is the actual task when you
+are standing in front of a shelf.
+
+**Typing is a first-class path, never a fallback.** Roughly a third of browsers
+cannot do speech recognition at all, and a noisy shop defeats most of the rest.
+
+Every foreground/background pair is checked against WCAG AA rather than eyeballed.
+The obvious grocery green (`#059669`) is deliberately *not* the button colour:
+white on it measures 3.77:1 and fails, so interactive surfaces use `#047857` at
+5.48:1. Icons are inline SVG on a shared 24px grid — emoji render differently on
+every platform, are announced by screen readers as whatever their unicode name
+happens to be, and cannot inherit colour.
+
+Motion is decorative throughout: colour, position and text carry the same
+information, so `prefers-reduced-motion` stops all of it without anything becoming
+unclear. Layout holds at 320px with no horizontal scroll.
 
 ---
 

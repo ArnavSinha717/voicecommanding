@@ -1,11 +1,19 @@
 /**
  * Application shell.
  *
- * Mobile-first and one-thumb: the list occupies the screen, the microphone sits
- * where a thumb rests, and a text field is always present rather than hidden
- * behind a fallback. Roughly a third of browsers cannot do speech recognition at
- * all — Firefox ships it disabled — so typing is a first-class path, not an
- * apology.
+ * Voice-first, one-handed, and built for where it is actually used: standing in
+ * a shop, phone in one hand, eyes mostly on the shelves. Three consequences run
+ * through the layout.
+ *
+ * The microphone is the largest control on screen. Anything smaller says the
+ * keyboard is the real interface and voice is a novelty bolted on.
+ *
+ * The list is scannable rather than readable — a colour rail per aisle means
+ * finding the dairy line takes a glance, not a parse.
+ *
+ * Typing is a first-class path, never a fallback. Roughly a third of browsers
+ * cannot do speech recognition at all (Firefox ships it disabled), and a noisy
+ * shop defeats most of the rest.
  */
 
 import { useMemo, useState, type FormEvent } from 'react'
@@ -17,6 +25,20 @@ import type { SpeechPort } from '../ports/speech'
 import type { StoragePort } from '../ports/storage'
 import type { CatalogPort } from '../ports/catalog'
 import type { LlmPort } from '../ports/llm'
+import {
+  AlertIcon,
+  CloseIcon,
+  DeviceIcon,
+  KeyboardIcon,
+  MicIcon,
+  PlusIcon,
+  SparkIcon,
+  StopIcon,
+  TagIcon,
+  TrashIcon,
+  UndoIcon,
+  Waveform,
+} from './icons'
 import './app.css'
 
 const CATEGORY_LABELS: Readonly<Record<Category, string>> = {
@@ -33,12 +55,13 @@ const CATEGORY_LABELS: Readonly<Record<Category, string>> = {
   other: 'Other',
 }
 
-/** Fixed order, so the list does not reshuffle as categories come and go. */
+/** Fixed order, so the list never reshuffles as categories come and go. */
 const CATEGORY_ORDER: readonly Category[] = [
   'produce', 'dairy', 'bakery', 'meat', 'frozen', 'pantry',
   'beverages', 'snacks', 'household', 'personal-care', 'other',
 ]
 
+/** Chosen to teach the range, not fill space: quantity, compound, removal, Hinglish. */
 const EXAMPLES = [
   'Add two litres of milk',
   'I need apples and bananas',
@@ -78,7 +101,10 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
     }))
   }, [list.state.items])
 
-  const outstanding = list.state.items.filter((item) => !item.checked).length
+  const total = list.state.items.length
+  const done = list.state.items.filter((item) => item.checked).length
+  const outstanding = total - done
+  const listening = list.micState === 'listening'
 
   function onSubmit(event: FormEvent) {
     event.preventDefault()
@@ -91,18 +117,14 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
       <header className="header">
         <div>
           <h1>Shopping List</h1>
-          <p className="subtitle">
-            {list.state.items.length === 0
-              ? 'Nothing yet'
-              : `${outstanding} to get · ${list.state.items.length} total`}
-          </p>
+          <p className="subtitle">{total === 0 ? 'Nothing yet' : `${outstanding} still to get`}</p>
         </div>
+
+        {total > 0 ? <Progress done={done} total={total} /> : null}
+
         <label className="language">
           <span className="visually-hidden">Voice language</span>
-          <select
-            value={list.language}
-            onChange={(event) => list.setLanguage(event.target.value)}
-          >
+          <select value={list.language} onChange={(event) => list.setLanguage(event.target.value)}>
             {LANGUAGES.map((language) => (
               <option key={language.tag} value={language.tag}>
                 {language.label}
@@ -113,13 +135,18 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
       </header>
 
       <main className="list" aria-label="Shopping list">
-        {list.state.items.length === 0 ? (
+        {total === 0 ? (
           <div className="empty">
-            <p>Say what you need, or type it.</p>
+            <div className="empty-art">
+              <MicIcon size={30} />
+            </div>
+            <h2>Say what you need</h2>
+            <p>Tap the microphone, or type it below.</p>
             <ul className="examples">
               {EXAMPLES.map((example) => (
                 <li key={example}>
                   <button type="button" onClick={() => list.submitText(example)}>
+                    <TagIcon size={17} />
                     {example}
                   </button>
                 </li>
@@ -128,8 +155,16 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
           </div>
         ) : (
           grouped.map(({ category, items }) => (
-            <section key={category} className="group">
-              <h2>{CATEGORY_LABELS[category]}</h2>
+            <section
+              key={category}
+              className="group"
+              style={{ ['--cat' as string]: `var(--cat-${category})` }}
+            >
+              <div className="group-head">
+                <span className="group-dot" />
+                <h2>{CATEGORY_LABELS[category]}</h2>
+                <span className="group-count">{items.length}</span>
+              </div>
               <ul>
                 {items.map((item) => (
                   <li key={item.id} className={item.checked ? 'item checked' : 'item'}>
@@ -144,16 +179,12 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
                           })
                         }
                       />
-                      <span className="name">{item.name}</span>
+                      <span className="item-name">{item.name}</span>
                       {item.quantity.value !== 1 || item.quantity.unit !== 'piece' ? (
                         <span className="quantity">{formatQuantity(item.quantity)}</span>
                       ) : null}
-                      {/* Low confidence is surfaced rather than hidden: the user
-                          is the only one who can confirm a doubtful match. */}
                       {item.confidence < 0.6 ? (
-                        <span className="uncertain" title="Not sure I heard this right">
-                          ?
-                        </span>
+                        <span className="uncertain" title="Not sure I heard this right">?</span>
                       ) : null}
                     </label>
                     <button
@@ -167,7 +198,7 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
                         })
                       }
                     >
-                      ×
+                      <TrashIcon size={18} />
                     </button>
                   </li>
                 ))}
@@ -175,150 +206,204 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
             </section>
           ))
         )}
-      </main>
 
-      {list.agent.thinking || list.agent.proposal !== null || list.agent.failed ? (
-        <section className="proposal" aria-label="Suggested plan">
-          {list.agent.thinking ? (
-            <p className="notice">Working out what you need…</p>
-          ) : list.agent.failed ? (
-            <p className="notice error">
-              I couldn’t plan that one. Try naming the items instead.
-              <button type="button" onClick={list.rejectProposal}>
-                Dismiss
+        {/* The agent proposes; it never applies its own work. Nothing is added
+            until this is accepted. */}
+        {list.agent.thinking || list.agent.proposal !== null || list.agent.failed ? (
+          <section className="panel" aria-label="Suggested plan">
+            <div className="panel-head">
+              <SparkIcon size={17} />
+              <h2>
+                {list.agent.thinking
+                  ? 'Working out what you need…'
+                  : (list.agent.proposal?.summary ?? 'Could not plan that')}
+              </h2>
+              {!list.agent.thinking ? (
+                <button type="button" className="close" aria-label="Dismiss" onClick={list.rejectProposal}>
+                  <CloseIcon size={17} />
+                </button>
+              ) : null}
+            </div>
+
+            {list.agent.thinking ? (
+              <div className="panel-body">
+                <ul className="skeletons" aria-busy="true">
+                  {[0, 1].map((row) => <li key={row} />)}
+                </ul>
+              </div>
+            ) : list.agent.failed ? (
+              <div className="panel-body">
+                <p className="notice warn">
+                  <AlertIcon size={16} />
+                  I couldn’t plan that one. Try naming the items instead.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="panel-body">
+                  <ul>
+                    {list.agent.proposal?.items.map((proposed) => (
+                      <li key={proposed.canonicalId}>
+                        <div className="row-button">
+                          <div className="row-text">
+                            <span className="row-title">
+                              {proposed.quantity > 1 ? `${proposed.quantity} × ` : null}
+                              {proposed.name}
+                            </span>
+                            {proposed.reason !== '' ? (
+                              <span className="row-sub">{proposed.reason}</span>
+                            ) : null}
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="proposal-actions">
+                  <button type="button" className="accept" onClick={list.acceptProposal}>
+                    Add all
+                  </button>
+                  <button type="button" onClick={list.rejectProposal}>
+                    No thanks
+                  </button>
+                </div>
+              </>
+            )}
+          </section>
+        ) : null}
+
+        {list.search.query !== null ? (
+          <section className="panel" aria-label="Search results">
+            <div className="panel-head">
+              <TagIcon size={17} />
+              <h2>
+                “{list.search.query.text}”
+                {list.search.query.maxPrice !== undefined ? ` under ₹${list.search.query.maxPrice}` : null}
+              </h2>
+              <button type="button" className="close" aria-label="Close search" onClick={list.clearSearch}>
+                <CloseIcon size={17} />
               </button>
-            </p>
-          ) : (
-            <>
-              {/* The agent proposes; it never applies its own work. Nothing is
-                  added until this is accepted. */}
-              <h2>{list.agent.proposal?.summary}</h2>
+            </div>
+
+            <div className="panel-body">
+              {list.search.loading ? (
+                /* Skeletons rather than a spinner: the row count is known, so
+                   results landing does not shift the layout. */
+                <ul className="skeletons" aria-busy="true">
+                  {[0, 1, 2].map((row) => <li key={row} />)}
+                </ul>
+              ) : list.search.results.length === 0 ? (
+                <p className="notice">Nothing matched. Try fewer words.</p>
+              ) : (
+                <ul>
+                  {list.search.results.map((product) => (
+                    <li key={product.id}>
+                      <button
+                        type="button"
+                        className="row-button"
+                        onClick={() => {
+                          list.submitText(`add ${product.name}`)
+                          list.clearSearch()
+                        }}
+                      >
+                        <div className="row-text">
+                          <span className="row-title">{product.name}</span>
+                          <span className="meta">
+                            {product.brand !== undefined ? <span>{product.brand}</span> : null}
+                            {product.size !== undefined ? <span>{product.size}</span> : null}
+                            {/* Price shown only where a source actually has one.
+                                An invented figure would be the worst thing here. */}
+                            {product.priceInr !== undefined ? (
+                              <span className="price">₹{product.priceInr}</span>
+                            ) : (
+                              <span className="price unknown">price unavailable</span>
+                            )}
+                            {product.discount !== undefined ? (
+                              <span className="deal">{Math.round(product.discount * 100)}% off</span>
+                            ) : null}
+                          </span>
+                        </div>
+                        <span className="row-add"><PlusIcon size={15} /></span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {list.search.degraded ? (
+                <p className="notice">
+                  <AlertIcon size={15} />
+                  Showing offline results only — the product database is unreachable.
+                </p>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
+
+        {list.suggestions.length > 0 ? (
+          <section className="panel" aria-label="Suggestions">
+            <div className="panel-head">
+              <SparkIcon size={17} />
+              <h2>You might need</h2>
+            </div>
+            <div className="panel-body">
               <ul>
-                {list.agent.proposal?.items.map((proposed) => (
-                  <li key={proposed.canonicalId}>
-                    <span className="proposed-name">
-                      {proposed.quantity > 1 ? `${proposed.quantity} × ` : null}
-                      {proposed.name}
-                    </span>
-                    {proposed.reason !== '' ? (
-                      <span className="proposed-reason">{proposed.reason}</span>
-                    ) : null}
+                {list.suggestions.map((suggestion) => (
+                  <li key={suggestion.canonicalId}>
+                    <button
+                      type="button"
+                      className="row-button"
+                      onClick={() =>
+                        list.dispatch({
+                          kind: 'add',
+                          item: {
+                            name: suggestion.name,
+                            canonicalId: suggestion.canonicalId,
+                            quantity: { value: 1, unit: 'piece' },
+                            category: suggestion.category,
+                            confidence: 1,
+                          },
+                          source: 'suggestion',
+                        })
+                      }
+                    >
+                      <div className="row-text">
+                        <span className="row-title">{suggestion.name}</span>
+                        {/* Every suggestion states why it is here. An unexplained
+                            one reads as the app guessing at you. */}
+                        <span className="row-sub">{suggestion.reason}</span>
+                      </div>
+                      <span className="row-add"><PlusIcon size={15} /></span>
+                    </button>
                   </li>
                 ))}
               </ul>
-              <div className="proposal-actions">
-                <button type="button" className="accept" onClick={list.acceptProposal}>
-                  Add all
-                </button>
-                <button type="button" onClick={list.rejectProposal}>
-                  No thanks
-                </button>
-              </div>
-            </>
-          )}
-        </section>
-      ) : null}
+            </div>
+          </section>
+        ) : null}
 
-      {list.search.query !== null ? (
-        <section className="results" aria-label="Search results">
-          <header>
-            <h2>
-              Results for “{list.search.query.text}”
-              {list.search.query.maxPrice !== undefined ? ` under ₹${list.search.query.maxPrice}` : null}
-            </h2>
-            <button type="button" onClick={list.clearSearch}>
-              Close
-            </button>
-          </header>
-
-          {list.search.loading ? (
-            /* Skeletons rather than a spinner: the row count is known, so the
-               layout does not jump when results land. */
-            <ul className="skeletons" aria-busy="true">
-              {[0, 1, 2].map((row) => (
-                <li key={row} />
-              ))}
-            </ul>
-          ) : list.search.results.length === 0 ? (
-            <p className="notice">Nothing matched. Try fewer words.</p>
-          ) : (
-            <ul>
-              {list.search.results.map((product) => (
-                <li key={product.id}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      list.submitText(`add ${product.name}`)
-                      list.clearSearch()
-                    }}
-                  >
-                    <span className="result-name">{product.name}</span>
-                    <span className="result-meta">
-                      {product.brand !== undefined ? <span>{product.brand}</span> : null}
-                      {product.size !== undefined ? <span>{product.size}</span> : null}
-                      {/* Price is shown only where a source actually has one.
-                          An invented figure would be the worst thing here. */}
-                      {product.priceInr !== undefined ? (
-                        <span className="price">₹{product.priceInr}</span>
-                      ) : (
-                        <span className="price unknown">price unavailable</span>
-                      )}
-                      {product.discount !== undefined ? (
-                        <span className="deal">{Math.round(product.discount * 100)}% off</span>
-                      ) : null}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {list.search.degraded ? (
-            <p className="notice subtle">
-              Showing offline results only — the product database is unreachable.
+        <div className="notices">
+          {!list.supported ? (
+            <p className="notice warn">
+              <KeyboardIcon size={16} />
+              This browser can’t listen — Firefox ships speech recognition switched off. Typing works
+              exactly the same.
             </p>
           ) : null}
-        </section>
-      ) : null}
-
-      {list.suggestions.length > 0 ? (
-        <section className="suggestions" aria-label="Suggestions">
-          <h2>You might need</h2>
-          <ul>
-            {list.suggestions.map((suggestion) => (
-              <li key={suggestion.canonicalId}>
-                <button
-                  type="button"
-                  onClick={() =>
-                    list.dispatch({
-                      kind: 'add',
-                      item: {
-                        name: suggestion.name,
-                        canonicalId: suggestion.canonicalId,
-                        quantity: { value: 1, unit: 'piece' },
-                        category: suggestion.category,
-                        confidence: 1,
-                      },
-                      source: 'suggestion',
-                    })
-                  }
-                >
-                  <span className="suggestion-name">{suggestion.name}</span>
-                  {/* Every suggestion states why it is here. An unexplained one
-                      reads as the app guessing at you. */}
-                  <span className="suggestion-reason">{suggestion.reason}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
-      {/* Transcript is announced politely so screen-reader users get the same
-          real-time feedback sighted users get from watching it appear. */}
-      <div className="transcript" aria-live="polite">
-        {list.interimTranscript !== '' ? `“${list.interimTranscript}”` : null}
-      </div>
+          {list.lastError !== null ? (
+            <p className="notice warn">
+              <AlertIcon size={16} />
+              {list.lastError.message}
+            </p>
+          ) : null}
+          {list.recognitionMode === 'on-device' ? (
+            <p className="notice info">
+              <DeviceIcon size={16} />
+              Recognition is running on your device.
+            </p>
+          ) : null}
+        </div>
+      </main>
 
       <div className="toasts" aria-live="polite">
         {list.toasts.map((toast) => (
@@ -332,6 +417,7 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
                   list.dismissToast(toast.id)
                 }}
               >
+                <UndoIcon size={15} />
                 Undo
               </button>
             ) : null}
@@ -341,57 +427,84 @@ export default function App({ speech, storage, catalog, llm }: AppProps) {
               aria-label="Dismiss"
               onClick={() => list.dismissToast(toast.id)}
             >
-              ×
+              <CloseIcon size={15} />
             </button>
           </div>
         ))}
       </div>
 
-      <footer className="composer">
-        <form onSubmit={onSubmit}>
-          <input
-            type="text"
-            value={draft}
-            placeholder="Type an item…"
-            aria-label="Type a command"
-            onChange={(event) => setDraft(event.target.value)}
-          />
-          <button type="submit" className="send" disabled={draft.trim() === ''}>
-            Add
-          </button>
-        </form>
-
-        <button
-          type="button"
-          className={`mic ${list.micState}`}
-          aria-label={MIC_LABEL[list.micState]}
-          aria-pressed={list.micState === 'listening'}
-          disabled={!list.supported}
-          onClick={() => (list.micState === 'listening' ? list.stopListening() : list.listen())}
-        >
-          {/* Ring scales with input level, so the user can see the mic is
-              actually hearing them rather than trusting a static icon. */}
-          <span
-            className="level"
-            style={{ transform: `scale(${1 + list.audioLevel * 0.6})` }}
-            aria-hidden="true"
-          />
-          <span className="glyph" aria-hidden="true">
-            {list.micState === 'thinking' ? '…' : '●'}
+      <footer className="dock">
+        {/* Announced politely so screen-reader users get the same real-time
+            feedback sighted users get from watching it appear. */}
+        <div className={`transcript${listening ? ' listening' : ''}`} aria-live="polite">
+          {listening ? <Waveform active level={list.audioLevel} /> : null}
+          <span className="text">
+            {list.interimTranscript !== ''
+              ? `“${list.interimTranscript}”`
+              : listening
+                ? 'Listening…'
+                : null}
           </span>
-        </button>
-      </footer>
+        </div>
 
-      {!list.supported ? (
-        <p className="notice">
-          This browser can’t listen — Firefox ships speech recognition switched off. Typing works
-          exactly the same.
-        </p>
-      ) : null}
-      {list.lastError !== null ? <p className="notice error">{list.lastError.message}</p> : null}
-      {list.recognitionMode === 'on-device' ? (
-        <p className="notice subtle">Recognition is running on your device.</p>
-      ) : null}
+        <div className="dock-row">
+          <form className="composer" onSubmit={onSubmit}>
+            <input
+              type="text"
+              value={draft}
+              placeholder="Type an item…"
+              aria-label="Type a command"
+              enterKeyHint="done"
+              onChange={(event) => setDraft(event.target.value)}
+            />
+            <button type="submit" className="send" aria-label="Add" disabled={draft.trim() === ''}>
+              <PlusIcon size={20} />
+            </button>
+          </form>
+
+          <button
+            type="button"
+            className={`mic ${list.micState}`}
+            aria-label={MIC_LABEL[list.micState]}
+            aria-pressed={listening}
+            disabled={!list.supported}
+            onClick={() => (listening ? list.stopListening() : list.listen())}
+          >
+            {listening ? <StopIcon size={22} /> : <MicIcon size={24} />}
+          </button>
+        </div>
+      </footer>
+    </div>
+  )
+}
+
+/** Remaining-count ring — progress without a bar taking up a whole row. */
+function Progress({ done, total }: { readonly done: number; readonly total: number }) {
+  const radius = 18
+  const circumference = 2 * Math.PI * radius
+  const fraction = total === 0 ? 0 : done / total
+
+  return (
+    <div
+      className="progress"
+      role="progressbar"
+      aria-valuenow={done}
+      aria-valuemin={0}
+      aria-valuemax={total}
+      aria-label={`${done} of ${total} collected`}
+    >
+      <svg viewBox="0 0 44 44">
+        <circle className="track" cx="22" cy="22" r={radius} />
+        <circle
+          className="value"
+          cx="22"
+          cy="22"
+          r={radius}
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference * (1 - fraction)}
+        />
+      </svg>
+      <span>{total - done}</span>
     </div>
   )
 }

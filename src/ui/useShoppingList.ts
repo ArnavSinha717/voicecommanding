@@ -17,6 +17,7 @@ import { applyCommand, EMPTY_STATE, type Effect, type ListState } from '../domai
 import { ItemResolver, DEFAULT_CONFIG } from '../domain/resolve/resolver'
 import type { LanguageTag, RecognitionMode, SpeechError, SpeechPort } from '../ports/speech'
 import type { StoragePort } from '../ports/storage'
+import { demoRequested, demoState } from './demo'
 import type { CatalogPort, Product } from '../ports/catalog'
 import { LocalCatalogAdapter } from '../adapters/catalog/local'
 import { CompositeCatalogAdapter, OpenFoodFactsAdapter } from '../adapters/catalog/openfoodfacts'
@@ -49,7 +50,7 @@ export interface Toast {
 }
 
 export const LANGUAGES: ReadonlyArray<{ tag: LanguageTag; label: string }> = [
-  { tag: 'en-IN', label: 'English (India)' },
+  { tag: 'en-IN', label: 'English (IN)' },
   { tag: 'en-US', label: 'English (US)' },
   { tag: 'hi-IN', label: 'हिन्दी' },
 ]
@@ -125,7 +126,7 @@ export function useShoppingList(options: Options = {}): ShoppingListApi {
   // Restored synchronously on first render rather than in an effect: loading via
   // setState would render an empty list, then immediately re-render with the real
   // one, producing a visible flash of "Nothing yet" on every launch.
-  const [restored] = useState(() => storage.load())
+  const [restored] = useState(() => (demoRequested() ? demoState(Date.now()) : storage.load()))
   const [state, setState] = useState<ListState>(() =>
     restored === null ? EMPTY_STATE : { ...EMPTY_STATE, items: restored.items },
   )

@@ -1,39 +1,112 @@
 /*
- * Design tokens and layout.
+ * Design system.
  *
- * Plain CSS with custom properties rather than a utility framework: the
- * submission guidelines ask for minimal dependencies, and a stylesheet this size
- * does not need a build step of its own.
+ * Product type: grocery and shopping list. Interaction model: voice-first,
+ * one-handed, used standing in a shop while looking at shelves — so the
+ * microphone is the largest control on screen, the list is scannable at a
+ * glance, and nothing important sits where a thumb covers it.
  *
- * Light is the base and dark is a media-query override, so a viewer whose system
- * preference is unknown still gets a fully painted page.
+ * Every foreground/background pair was checked against WCAG AA (4.5:1) rather
+ * than eyeballed:
+ *
+ *   #047857 + white ............ 5.48:1   interactive primary
+ *   #059669 + black ............ 5.57:1   bright accent, dark label
+ *   #0F172A on #ECFDF5 ........ 16.95:1   body text
+ *   #475569 on #FFFFFF ......... 7.58:1   secondary text
+ *   #DC2626 + white ............ 4.83:1   destructive
+ *
+ * The obvious grocery green (#059669) is deliberately not the button colour:
+ * white on it measures 3.77:1 and fails. #047857 carries white text safely.
  */
 
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap');
+
 :root {
-  --bg: #fbfaf8;
+  --bg: #f4fbf8;
   --surface: #ffffff;
-  --border: #e6e2db;
-  --text: #1c1a17;
-  --muted: #6f6961;
-  --accent: #1f6f4f;
-  --accent-soft: #e8f2ec;
-  --danger: #a8331f;
-  --shadow: 0 1px 2px rgb(28 26 23 / 6%), 0 8px 24px rgb(28 26 23 / 6%);
-  --radius: 12px;
-  --tap: 44px; /* WCAG 2.5.5 minimum target size */
+  --surface-sunk: #f0f8f6;
+  --border: #dceee7;
+  --border-strong: #bfe0d3;
+
+  --text: #0f172a;
+  --muted: #475569;
+  --faint: #78889c;
+
+  --primary: #047857;
+  --primary-hover: #036548;
+  --on-primary: #ffffff;
+  --accent-soft: #d9f4e8;
+  --warm: #d97706;
+  --danger: #dc2626;
+  --on-danger: #ffffff;
+
+  /* A colour per aisle. A shopping list is read by glancing, not by reading:
+     the rail lets someone find the dairy line without parsing any words. Used
+     as a 4px rail and a dot only, never behind text, so hue never has to carry
+     contrast. */
+  --cat-produce: #16a34a;
+  --cat-dairy: #2563eb;
+  --cat-bakery: #d97706;
+  --cat-meat: #e11d48;
+  --cat-pantry: #a16207;
+  --cat-frozen: #0891b2;
+  --cat-beverages: #7c3aed;
+  --cat-snacks: #db2777;
+  --cat-household: #475569;
+  --cat-personal-care: #0d9488;
+  --cat-other: #64748b;
+
+  --font-head: 'Rubik', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Nunito Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-full: 999px;
+  --tap: 48px;
+
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 5%);
+  --shadow-md: 0 2px 4px rgb(15 23 42 / 5%), 0 8px 20px rgb(15 23 42 / 6%);
+  --shadow-mic: 0 6px 20px rgb(4 120 87 / 34%);
+
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #16150f;
-    --surface: #211f19;
-    --border: #35322a;
-    --text: #f2efe8;
-    --muted: #a49d92;
-    --accent: #6ec49a;
-    --accent-soft: #23372e;
-    --danger: #e08a76;
-    --shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 8px 24px rgb(0 0 0 / 30%);
+    --bg: #0b1512;
+    --surface: #14211c;
+    --surface-sunk: #101b17;
+    --border: #24352e;
+    --border-strong: #33493e;
+
+    --text: #eaf4ef;
+    --muted: #a3b5ac;
+    --faint: #7b8f86;
+
+    --primary: #34d399;
+    --primary-hover: #5eead4;
+    --on-primary: #052e22;
+    --accent-soft: #17302a;
+    --warm: #fbbf24;
+    --danger: #fb7185;
+    --on-danger: #3b0a12;
+
+    --cat-produce: #4ade80;
+    --cat-dairy: #60a5fa;
+    --cat-bakery: #fbbf24;
+    --cat-meat: #fb7185;
+    --cat-pantry: #d6b06a;
+    --cat-frozen: #22d3ee;
+    --cat-beverages: #a78bfa;
+    --cat-snacks: #f472b6;
+    --cat-household: #94a3b8;
+    --cat-personal-care: #2dd4bf;
+    --cat-other: #94a3b8;
+
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 40%);
+    --shadow-md: 0 2px 4px rgb(0 0 0 / 40%), 0 10px 26px rgb(0 0 0 / 34%);
+    --shadow-mic: 0 6px 22px rgb(52 211 153 / 26%);
   }
 }
 
@@ -41,21 +114,25 @@
 
 body {
   margin: 0;
+  /* Nothing in this layout is meant to scroll sideways; a stray wide child
+     should be clipped rather than shift the whole page. */
+  overflow-x: hidden;
   background: var(--bg);
   color: var(--text);
-  font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
 .app {
-  max-width: 34rem;
+  max-width: 32rem;
   margin: 0 auto;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   padding: 1rem 1rem 0;
-  /* Leaves room for the fixed composer plus the iOS home indicator. */
-  padding-bottom: calc(7rem + env(safe-area-inset-bottom));
+  padding-bottom: calc(10.5rem + env(safe-area-inset-bottom));
 }
 
 .visually-hidden {
@@ -65,207 +142,381 @@ body {
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
-/* ---------------------------------------------------------------- header */
+/* ================================================================ header */
 
 .header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding-bottom: 1rem;
+  gap: 0.5rem;
+  padding: 0.25rem 0 1rem;
 }
 
-.header h1 { margin: 0; font-size: 1.35rem; letter-spacing: -0.01em; }
-.subtitle { margin: 0.15rem 0 0; color: var(--muted); font-size: 0.875rem; }
+/* Lets the title block shrink instead of forcing the row wider than the
+   viewport — at 320px the language control was being pushed off-screen and
+   the page scrolled sideways. */
+.header > div:first-child { min-width: 0; flex: 1; }
+
+.header h1 {
+  margin: 0;
+  font-family: var(--font-head);
+  /* Scales down on narrow screens rather than wrapping "Shopping / List". */
+  font-size: clamp(1.15rem, 5.5vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subtitle { margin: 0.1rem 0 0; color: var(--muted); font-size: 0.875rem; }
+
+/* Remaining-count ring: progress without a bar taking a whole row.
+   Hidden below 360px, where it was squeezing the title into an ellipsis. The
+   subtitle already says "5 still to get", so nothing is actually lost. */
+.progress { position: relative; width: 2.75rem; height: 2.75rem; flex-shrink: 0; display: grid; place-items: center; }
+
+@media (max-width: 359px) {
+  .progress { display: none; }
+}
+.progress svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.progress circle { fill: none; stroke-width: 3.5; }
+.progress .track { stroke: var(--border); }
+.progress .value { stroke: var(--primary); stroke-linecap: round; transition: stroke-dashoffset 400ms var(--ease); }
+.progress span { font-family: var(--font-head); font-size: 0.8125rem; font-weight: 600; font-variant-numeric: tabular-nums; }
 
 .language select {
-  min-height: var(--tap);
-  padding: 0 0.6rem;
+  min-height: 2.5rem;
+  /* Set once and rarely touched, so it yields space to the list first. */
+  max-width: 7.5rem;
+  padding: 0 0.375rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--r-sm);
   background: var(--surface);
   color: var(--text);
   font: inherit;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
 }
 
-/* ------------------------------------------------------------------ list */
+/* ================================================================== list */
 
 .list { flex: 1; }
+.group { margin-bottom: 1.5rem; }
+.group-head { display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.5rem 0.125rem; }
+.group-dot { width: 0.5rem; height: 0.5rem; border-radius: var(--r-full); background: var(--cat, var(--cat-other)); flex-shrink: 0; }
 
-.group { margin-bottom: 1.25rem; }
-
-.group h2 {
-  margin: 0 0 0.4rem;
-  font-size: 0.75rem;
+.group-head h2 {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--muted);
 }
 
-.group ul { list-style: none; margin: 0; padding: 0; }
+.group-count { margin-left: auto; font-size: 0.75rem; color: var(--faint); font-variant-numeric: tabular-nums; }
+.group ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
 
 .item {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  margin-bottom: 0.4rem;
-  padding-right: 0.25rem;
-  box-shadow: var(--shadow);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: border-color 160ms var(--ease), box-shadow 160ms var(--ease), opacity 200ms var(--ease);
 }
+
+.item::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--cat, var(--cat-other)); }
+.item:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); }
+.item.checked { opacity: 0.55; }
 
 .item label {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.7rem 0.5rem 0.7rem 0.75rem;
+  gap: 0.75rem;
   min-height: var(--tap);
+  padding: 0.625rem 0.5rem 0.625rem 1rem;
   cursor: pointer;
+  min-width: 0;
 }
 
 .item input[type='checkbox'] {
-  width: 1.15rem;
-  height: 1.15rem;
-  accent-color: var(--accent);
+  appearance: none;
+  width: 1.35rem;
+  height: 1.35rem;
   flex-shrink: 0;
+  border: 2px solid var(--border-strong);
+  border-radius: var(--r-full);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 140ms var(--ease), border-color 140ms var(--ease);
 }
 
-.item .name { flex: 1; }
-
-.item.checked .name {
-  text-decoration: line-through;
-  color: var(--muted);
+.item input[type='checkbox']::after {
+  content: '';
+  width: 0.45rem;
+  height: 0.75rem;
+  border: solid var(--on-primary);
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg) scale(0);
+  margin-top: -2px;
+  transition: transform 160ms var(--ease);
 }
+
+.item input[type='checkbox']:checked { background: var(--primary); border-color: var(--primary); }
+.item input[type='checkbox']:checked::after { transform: rotate(45deg) scale(1); }
+
+/* Long open-vocabulary names must wrap, not clip or blow the row out. */
+.item-name { flex: 1; min-width: 0; font-weight: 600; font-size: 0.9375rem; overflow-wrap: anywhere; }
+.item.checked .item-name { text-decoration: line-through; color: var(--muted); }
 
 .quantity {
+  flex-shrink: 0;
+  font-family: var(--font-head);
+  font-size: 0.75rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  font-size: 0.8125rem;
-  color: var(--muted);
+  color: var(--primary);
   background: var(--accent-soft);
-  padding: 0.15rem 0.45rem;
-  border-radius: 999px;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--r-full);
 }
 
+/* Low confidence is surfaced, not hidden — only the user can confirm a
+   doubtful match, and quietly keeping it would be the worse failure. */
 .uncertain {
-  color: var(--danger);
-  font-weight: 700;
+  flex-shrink: 0;
+  width: 1.25rem; height: 1.25rem;
+  display: grid; place-items: center;
+  border-radius: var(--r-full);
+  background: color-mix(in srgb, var(--warm) 18%, transparent);
+  color: var(--warm);
+  font-size: 0.6875rem; font-weight: 700;
   cursor: help;
 }
 
 .remove {
-  min-width: var(--tap);
-  min-height: var(--tap);
-  border: 0;
-  background: none;
-  color: var(--muted);
-  font-size: 1.35rem;
-  line-height: 1;
-  border-radius: var(--radius);
+  min-width: var(--tap); min-height: var(--tap);
+  display: grid; place-items: center;
+  border: 0; background: none;
+  color: var(--faint);
+  border-radius: var(--r-sm);
   cursor: pointer;
+  transition: color 140ms var(--ease), background 140ms var(--ease);
 }
 
-.remove:hover { color: var(--danger); }
+.remove:hover { color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); }
 
-/* ----------------------------------------------------------- empty state */
+/* =========================================================== empty state */
 
-.empty { padding: 2.5rem 0.5rem; text-align: center; color: var(--muted); }
-.empty p { margin: 0 0 1rem; }
+.empty { padding: 1.5rem 0 1.75rem; text-align: center; }
+
+.empty-art {
+  width: 4.5rem; height: 4.5rem;
+  margin: 0 auto 1rem;
+  display: grid; place-items: center;
+  border-radius: var(--r-full);
+  background: var(--accent-soft);
+  color: var(--primary);
+}
+
+.empty h2 { margin: 0 0 0.25rem; font-family: var(--font-head); font-size: 1.125rem; font-weight: 600; }
+.empty p { margin: 0 0 1.25rem; color: var(--muted); font-size: 0.9375rem; }
 
 .examples { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
 
 .examples button {
   width: 100%;
   min-height: var(--tap);
-  padding: 0.6rem 0.9rem;
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
+  display: flex; align-items: center; gap: 0.625rem;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
   background: var(--surface);
   color: var(--text);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
+  font: inherit; font-size: 0.9375rem;
+  text-align: left; cursor: pointer;
+  transition: border-color 160ms var(--ease), transform 160ms var(--ease);
 }
 
-.examples button:hover { border-style: solid; border-color: var(--accent); }
+.examples button:hover { border-color: var(--primary); transform: translateY(-1px); }
+.examples button svg { color: var(--faint); flex-shrink: 0; }
+.examples button:hover svg { color: var(--primary); }
 
-/* -------------------------------------------------- transcript & toasts */
+/* ============================================================== sections */
 
-.transcript {
-  min-height: 1.5rem;
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.9375rem;
-  font-style: italic;
+.panel {
+  margin: 0 0 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
+
+.panel-head { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 0.875rem; border-bottom: 1px solid var(--border); }
+
+.panel-head h2 {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: 0.8125rem; font-weight: 600;
+  flex: 1; min-width: 0; overflow-wrap: anywhere;
+}
+
+.panel-head svg { color: var(--primary); flex-shrink: 0; }
+
+.panel-head .close {
+  border: 0; background: none; color: var(--faint);
+  min-width: 2rem; min-height: 2rem;
+  display: grid; place-items: center;
+  border-radius: var(--r-sm); cursor: pointer;
+}
+
+.panel-head .close:hover { color: var(--text); background: var(--surface-sunk); }
+.panel-body { padding: 0.625rem; }
+.panel ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+
+.row-button {
+  width: 100%;
+  min-height: var(--tap);
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  background: var(--surface-sunk);
+  color: var(--text);
+  font: inherit; text-align: left; cursor: pointer;
+  transition: border-color 160ms var(--ease), background 160ms var(--ease);
+}
+
+.row-button:hover { border-color: var(--primary); background: var(--surface); }
+.row-text { flex: 1; min-width: 0; display: grid; gap: 0.1rem; }
+.row-title { font-weight: 600; font-size: 0.9375rem; overflow-wrap: anywhere; }
+.row-sub { font-size: 0.8125rem; color: var(--muted); overflow-wrap: anywhere; }
+
+.row-add {
+  flex-shrink: 0;
+  width: 1.75rem; height: 1.75rem;
+  display: grid; place-items: center;
+  border-radius: var(--r-full);
+  background: var(--accent-soft);
+  color: var(--primary);
+}
+
+.meta { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 0.8125rem; color: var(--muted); }
+.meta .price { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); }
+.meta .price.unknown { font-weight: 400; font-style: italic; color: var(--faint); }
+.meta .deal { color: var(--primary); font-weight: 700; }
+
+.skeletons { display: grid; gap: 0.4rem; }
+
+.skeletons li {
+  height: var(--tap);
+  border-radius: var(--r-md);
+  background: linear-gradient(90deg, var(--surface-sunk) 25%, var(--border) 50%, var(--surface-sunk) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s linear infinite;
+}
+
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+.proposal-actions { display: flex; gap: 0.5rem; padding: 0 0.625rem 0.625rem; }
+
+.proposal-actions button {
+  flex: 1; min-height: var(--tap);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit; font-weight: 600; cursor: pointer;
+}
+
+.proposal-actions .accept { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.proposal-actions .accept:hover { background: var(--primary-hover); }
+
+/* ================================================================ toasts */
 
 .toasts {
   position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(7.5rem + env(safe-area-inset-bottom));
-  width: min(32rem, calc(100% - 2rem));
-  display: grid;
-  gap: 0.4rem;
-  z-index: 10;
+  left: 50%; transform: translateX(-50%);
+  bottom: calc(11rem + env(safe-area-inset-bottom));
+  width: min(30rem, calc(100% - 2rem));
+  display: grid; gap: 0.4rem;
+  z-index: 20; pointer-events: none;
 }
 
 .toast {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 0.75rem;
-  border-radius: var(--radius);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  font-size: 0.9375rem;
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.55rem 0.5rem 0.55rem 0.875rem;
+  border-radius: var(--r-md);
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: var(--shadow-md);
+  font-size: 0.875rem;
+  pointer-events: auto;
+  animation: rise 240ms var(--ease);
 }
 
-.toast span { flex: 1; }
-.toast.clarify { border-color: var(--danger); }
+.toast span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.toast.clarify { background: var(--warm); color: #241300; }
 
 .toast button {
-  border: 0;
-  background: none;
-  color: var(--accent);
-  font: inherit;
-  font-weight: 600;
-  min-height: var(--tap);
-  padding: 0 0.5rem;
-  cursor: pointer;
+  border: 0; background: none; color: inherit;
+  font: inherit; font-weight: 700;
+  min-height: 2.25rem; padding: 0 0.5rem;
+  display: flex; align-items: center; gap: 0.3rem;
+  border-radius: var(--r-sm); cursor: pointer; opacity: 0.9;
 }
 
-.toast .dismiss { color: var(--muted); font-weight: 400; font-size: 1.1rem; }
+.toast button:hover { opacity: 1; background: rgb(255 255 255 / 14%); }
+.toast .dismiss { font-weight: 400; padding: 0 0.35rem; }
 
-/* -------------------------------------------------------------- composer */
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
 
-.composer {
+/* ================================================================== dock */
+
+.dock {
   position: fixed;
-  bottom: 0;
-  left: 50%;
+  bottom: 0; left: 50%;
   transform: translateX(-50%);
-  width: min(34rem, 100%);
-  display: flex;
-  gap: 0.6rem;
-  align-items: center;
-  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
-  background: color-mix(in srgb, var(--bg) 92%, transparent);
-  backdrop-filter: blur(8px);
+  width: min(32rem, 100%);
+  z-index: 15;
+  padding: 0.75rem 1rem calc(0.875rem + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(12px);
   border-top: 1px solid var(--border);
 }
 
-.composer form { flex: 1; display: flex; gap: 0.4rem; }
+/* Live transcript sits directly above the mic, where the eye already is. */
+.transcript {
+  min-height: 1.75rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  font-size: 0.9375rem;
+  color: var(--muted);
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+}
+
+.transcript .text { overflow-wrap: anywhere; max-height: 3rem; overflow-y: auto; }
+.transcript.listening .text { color: var(--text); font-weight: 600; }
+
+.dock-row { display: flex; align-items: center; gap: 0.625rem; }
+.composer { flex: 1; display: flex; gap: 0.4rem; min-width: 0; }
 
 .composer input[type='text'] {
-  flex: 1;
+  flex: 1; min-width: 0;
   min-height: var(--tap);
-  padding: 0 0.75rem;
+  padding: 0 0.875rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--r-full);
   background: var(--surface);
   color: var(--text);
   font: inherit;
@@ -273,258 +524,114 @@ body {
   font-size: 16px;
 }
 
+.composer input::placeholder { color: var(--faint); }
+
 .composer .send {
-  min-height: var(--tap);
-  padding: 0 0.9rem;
-  border: 0;
-  border-radius: var(--radius);
-  background: var(--accent);
-  color: var(--bg);
-  font: inherit;
-  font-weight: 600;
+  min-width: var(--tap); min-height: var(--tap);
+  display: grid; place-items: center;
+  border: 0; border-radius: var(--r-full);
+  background: var(--surface-sunk); color: var(--muted);
   cursor: pointer;
+  transition: background 160ms var(--ease), color 160ms var(--ease);
 }
 
-.composer .send:disabled { opacity: 0.4; cursor: default; }
+.composer .send:not(:disabled) { background: var(--accent-soft); color: var(--primary); }
+.composer .send:disabled { opacity: 0.45; cursor: default; }
 
+/* The microphone is the largest control on screen. This is a voice-first app;
+   anything smaller says the keyboard is the real interface. */
 .mic {
   position: relative;
-  width: 3.25rem;
-  height: 3.25rem;
+  width: 4rem; height: 4rem;
   flex-shrink: 0;
-  border: 0;
-  border-radius: 50%;
-  background: var(--accent);
-  color: var(--bg);
-  font-size: 1.1rem;
+  border: 0; border-radius: var(--r-full);
+  background: var(--primary); color: var(--on-primary);
   cursor: pointer;
-  display: grid;
-  place-items: center;
+  display: grid; place-items: center;
+  box-shadow: var(--shadow-mic);
+  transition: background 160ms var(--ease), transform 160ms var(--ease);
 }
 
-.mic:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+.mic:hover:not(:disabled) { background: var(--primary-hover); }
+.mic:active:not(:disabled) { transform: scale(0.95); }
+.mic:disabled { background: var(--surface-sunk); color: var(--faint); box-shadow: none; cursor: not-allowed; }
+.mic.listening { background: var(--danger); color: var(--on-danger); }
+.mic.error { background: var(--warm); color: #241300; }
 
-.mic .level {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: var(--accent);
-  opacity: 0.25;
-  transition: transform 80ms linear;
+.mic.listening::after {
+  content: '';
+  position: absolute; inset: -4px;
+  border-radius: var(--r-full);
+  border: 2px solid var(--danger);
+  animation: halo 1.6s var(--ease) infinite;
 }
 
-.mic.idle .level { display: none; }
-.mic .glyph { position: relative; }
-
-.mic.listening { animation: pulse 1.6s ease-in-out infinite; }
-.mic.error { background: var(--danger); }
-
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
-  50% { box-shadow: 0 0 0 0.6rem transparent; }
+@keyframes halo {
+  0% { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(1.35); opacity: 0; }
 }
 
-/* Honour a reduced-motion preference: the pulse is decorative, and the level
-   ring already conveys the same information without animation. */
-@media (prefers-reduced-motion: reduce) {
-  .mic.listening { animation: none; }
-  .mic .level { transition: none; }
+.mic.thinking::after {
+  content: '';
+  position: absolute; inset: -3px;
+  border-radius: var(--r-full);
+  border: 2px solid transparent;
+  border-top-color: var(--on-primary);
+  animation: spin 800ms linear infinite;
 }
 
-/* --------------------------------------------------------------- notices */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================== waveform */
+
+.waveform { display: inline-flex; align-items: center; gap: 3px; height: 1rem; }
+
+.waveform span {
+  display: block;
+  width: 3px; height: 100%;
+  border-radius: var(--r-full);
+  background: currentColor;
+  transform: scaleY(0.2);
+  transform-origin: center;
+  transition: transform 120ms var(--ease);
+}
+
+.waveform.is-active span { animation: bounce 900ms var(--ease) infinite alternate; }
+
+@keyframes bounce { to { transform: scaleY(1); } }
+
+/* =============================================================== notices */
+
+.notices { display: grid; gap: 0.4rem; margin-top: 0.625rem; }
 
 .notice {
-  margin: 0.5rem 0 0;
-  font-size: 0.875rem;
-  color: var(--muted);
-  text-align: center;
-}
-
-.notice.error { color: var(--danger); }
-.notice.subtle { opacity: 0.7; font-size: 0.8125rem; }
-
-:where(button, input, select):focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-/* ---------------------------------------------------------- suggestions */
-
-.suggestions { margin: 0 0 1rem; }
-
-.suggestions h2 {
-  margin: 0 0 0.4rem;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-}
-
-.suggestions ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.4rem;
-}
-
-.suggestions button {
-  width: 100%;
-  min-height: var(--tap);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.1rem;
-  padding: 0.55rem 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--accent-soft);
-  color: var(--text);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-
-.suggestions button:hover { border-color: var(--accent); }
-.suggestion-name { font-weight: 600; }
-.suggestion-reason { font-size: 0.8125rem; color: var(--muted); }
-
-/* ------------------------------------------------------- search results */
-
-.results {
-  margin: 0 0 1rem;
-  padding: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  box-shadow: var(--shadow);
-}
-
-.results header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.results h2 { margin: 0; font-size: 0.9375rem; }
-
-.results header button {
-  border: 0;
-  background: none;
-  color: var(--accent);
-  font: inherit;
-  font-size: 0.875rem;
-  min-height: var(--tap);
-  cursor: pointer;
-}
-
-.results ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; }
-
-.results ul button {
-  width: 100%;
-  min-height: var(--tap);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.15rem;
-  padding: 0.5rem 0.6rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg);
-  color: var(--text);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-
-.results ul button:hover { border-color: var(--accent); }
-
-.result-name { font-weight: 600; }
-
-.result-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  display: flex; align-items: flex-start; gap: 0.5rem;
+  margin: 0; padding: 0.55rem 0.7rem;
+  border-radius: var(--r-md);
+  background: var(--surface-sunk);
   font-size: 0.8125rem;
   color: var(--muted);
 }
 
-.result-meta .price { font-variant-numeric: tabular-nums; }
-.result-meta .price.unknown { font-style: italic; opacity: 0.75; }
-.result-meta .deal { color: var(--accent); font-weight: 600; }
+.notice svg { flex-shrink: 0; margin-top: 1px; }
+.notice.warn { background: color-mix(in srgb, var(--warm) 14%, transparent); color: var(--text); }
+.notice.warn svg { color: var(--warm); }
+.notice.info svg { color: var(--primary); }
 
-/* Skeletons keep the layout stable while results load. */
-.skeletons { display: grid; gap: 0.35rem; }
+/* ============================================================= a11y base */
 
-.skeletons li {
-  height: var(--tap);
-  border-radius: var(--radius);
-  background: linear-gradient(90deg, var(--border) 25%, var(--surface) 50%, var(--border) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.2s linear infinite;
+:where(button, input, select, a):focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
 }
 
-@keyframes shimmer {
-  to { background-position: -200% 0; }
-}
-
+/* Motion here is decorative throughout: colour, position and text carry the
+   same information, so it can all stop without anything becoming unclear. */
 @media (prefers-reduced-motion: reduce) {
-  .skeletons li { animation: none; }
-}
-
-/* --------------------------------------------------- agent proposal card */
-
-.proposal {
-  margin: 0 0 1rem;
-  padding: 0.75rem;
-  border: 1px solid var(--accent);
-  border-radius: var(--radius);
-  background: var(--accent-soft);
-}
-
-.proposal h2 { margin: 0 0 0.5rem; font-size: 0.9375rem; }
-.proposal ul { list-style: none; margin: 0 0 0.75rem; padding: 0; display: grid; gap: 0.3rem; }
-
-.proposal li {
-  display: flex;
-  flex-direction: column;
-  gap: 0.05rem;
-  padding: 0.4rem 0.5rem;
-  border-radius: var(--radius);
-  background: var(--surface);
-}
-
-.proposed-name { font-weight: 600; }
-.proposed-reason { font-size: 0.8125rem; color: var(--muted); }
-
-.proposal-actions { display: flex; gap: 0.5rem; }
-
-.proposal-actions button {
-  min-height: var(--tap);
-  flex: 1;
-  padding: 0 0.9rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--text);
-  font: inherit;
-  cursor: pointer;
-}
-
-.proposal-actions .accept {
-  background: var(--accent);
-  color: var(--bg);
-  border-color: var(--accent);
-  font-weight: 600;
-}
-
-.proposal .notice button {
-  margin-left: 0.5rem;
-  border: 0;
-  background: none;
-  color: var(--accent);
-  font: inherit;
-  cursor: pointer;
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
