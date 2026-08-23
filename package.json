@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc -b --noEmit && tsc --noEmit -p tsconfig.scripts.json",
+    "typecheck": "tsc -b --noEmit && tsc --noEmit -p tsconfig.scripts.json && tsc --noEmit -p api/tsconfig.json",
     "eval": "vite-node scripts/eval.ts",
     "eval:errors": "vite-node scripts/errors.ts",
     "build:catalog": "vite-node scripts/build-catalog.ts",
