@@ -145,7 +145,16 @@ network call or spend quota.
 **Unknown items are added, not refused.** A catalogue is always smaller than what
 people say. `"add chia seeds"` and `"add zorblex crunch bars"` both work; the second
 lands under *Other* with lower confidence, flagged in the UI. Resolution *enriches*,
-it does not *validate*.
+it does not *validate*. It refuses whole sentences, though — the fallback exists so
+an unrecognised *product* still reaches the list, not so a clause can be stored as one.
+
+**Compound utterances are parsed clause by clause.** People chain requests:
+*"add two litres of milk and I also need apples and bananas"*. Each clause is parsed
+as a complete utterance, and one carrying no verb — *"bananas"* — inherits the intent
+before it. That also makes `"add milk and remove bread"` work, which splitting a
+single rule's item span could not express. A destructive command is only honoured
+when it is the entire utterance, so *"…and clear the list"* buried in a sentence is
+ignored — a hot microphone picks up speech nobody addressed to it.
 
 **The agent proposes, it never mutates.** Its three tools are read-only by
 construction — there is no write tool for a model to reach for, which makes prompt
@@ -171,9 +180,9 @@ not already assumed.
 
 | Configuration | fired | correct family | false positives | resolved | p95 |
 |---|---|---|---|---|---|
-| exact match only | 25.4% | 23.2% | 1.8% | 5 | 0.04ms |
-| **+ fuzzy** | **25.4%** | **23.2%** | **1.8%** | **8** | 3.0ms |
-| + phonetic | 25.4% | 23.2% | 1.8% | 5 | 0.03ms |
+| exact match only | 20.4% | 18.3% | 1.0% | 5 | 0.05ms |
+| **+ fuzzy** | **21.1%** | **19.0%** | **1.1%** | **8** | 2.6ms |
+| + phonetic | 20.4% | 18.3% | 1.0% | 5 | 0.04ms |
 
 **hi-IN test split** — every Hindi command that fires is correct:
 
@@ -188,7 +197,7 @@ not already assumed.
 need no label mapping — they are alarms, music and weather, and a shopping list
 must not act on any of them. Early versions fired on 5.1% of them, resolving
 *"put on some coldplay"* to **eggs** and *"remove the alarm"* to **potato**. That is
-now 1.8%, and a chunk of the remainder is benchmark artifact rather than bug:
+now 1.0%, and a chunk of the remainder is benchmark artifact rather than bug:
 *"I need coffee"* is labelled `iot_coffee`, but in a dedicated shopping app adding
 coffee is correct.
 
@@ -281,11 +290,11 @@ Hinglish speaker's list into four.
 ## Testing
 
 ```bash
-npm test              # 269 tests
+npm test              # 282 tests
 npm run verify        # typecheck + lint + test + build
 ```
 
-**93.6% statements, 96.2% lines** across the domain.
+**93%+ statements** across the domain.
 
 Property-based tests (fast-check) found three bugs that example tests structurally
 could not:
@@ -349,8 +358,13 @@ Stated plainly, because pretending otherwise would be worse.
   Rather than hand-author a season table, the gap is left open. *"On sale"* is
   implemented, because BigBasket carries both marked and selling price so discount
   is measurable.
-- **Substitutes are same-category nearest-by-frequency.** A real substitute graph
-  needs product-level co-occurrence, and this dataset is too sparse at item level.
+- **Substitutes are same-category nearest-by-frequency**, and **complement
+  suggestions were removed entirely**. Instacart gives reliable *category*
+  co-occurrence — dairy and meat, lift 1.17 across 45,824 baskets — but the leap to
+  a specific product is not supported, and the output proved it: buying milk
+  suggested pork, because pork had the highest SKU count in the meat category.
+  Nothing in the data connects those items, only their categories. Product-level
+  co-occurrence is the fix and this dataset is too sparse for it.
 - **Hinglish is measured on a proxy.** No labelled code-mixed corpus exists for
   list intents. Devanagari Hindi is measured on MASSIVE's real held-out split;
   romanised Hinglish relies on deterministic transliteration.

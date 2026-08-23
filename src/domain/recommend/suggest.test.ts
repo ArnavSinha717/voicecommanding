@@ -99,12 +99,14 @@ describe('cold start', () => {
   })
 })
 
-describe('complements', () => {
-  it('draws on categories that co-occur with the list', () => {
-    const results = suggest({ items: [item('bread', 'bakery')], history: {}, now: NOW, limit: 8 })
-    const complement = results.find((s) => s.kind === 'complement')
-    expect(complement).toBeDefined()
-    expect(complement?.category).not.toBe('bakery')
+describe('suggestions never assert more than the data supports', () => {
+  it('does not recommend an unrelated item from a co-occurring category', () => {
+    // Category lift put pork alongside milk: dairy and meat co-occur, and pork
+    // had the highest SKU count in meat. The categories are related; the items
+    // are not. Complements were removed rather than shipped in that state.
+    const results = suggest({ items: [item('milk', 'dairy')], history: {}, now: NOW, limit: 8 })
+    expect(results.map((s) => s.canonicalId)).not.toContain('pork')
+    expect(results.every((s) => s.kind === 'replenishment' || s.kind === 'deal')).toBe(true)
   })
 })
 

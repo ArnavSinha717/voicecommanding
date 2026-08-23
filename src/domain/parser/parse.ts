@@ -112,6 +112,95 @@ export function parseHypotheses(
   }
 }
 
+/**
+ * Words that mean an utterance is a clause, not an item name.
+ *
+ * The open-vocabulary path exists so an unrecognised *product* still reaches the
+ * list. It is not a licence to put a sentence there. Without this guard,
+ * "add milk and i also need apples" produced an item literally named
+ * "I Also Need Apple", because the fragment after the conjunction was treated
+ * as a bare noun phrase.
+ */
+const CLAUSE_MARKERS =
+  /\b(?:i|we|you|need|want|add|remove|delete|get|buy|grab|also|please|list|kar|karo|chahiye|bhi|do|dena)\b/
+
+export function looksLikeSentence(phrase: string): boolean {
+  const words = phrase.trim().split(/\s+/)
+  return words.length > 3 || CLAUSE_MARKERS.test(phrase)
+}
+
+/**
+ * Parse a compound utterance as a sequence of clauses.
+ *
+ * People chain requests: "add two litres of milk and I also need apples and
+ * bananas". Splitting only the *item span* of a single matched rule leaves each
+ * fragment carrying its own framing, so "i also need apples" never resolves.
+ *
+ * Each clause is therefore parsed as a complete utterance in its own right. A
+ * clause that carries no verb — "bananas" — inherits the intent of the clause
+ * before it, which is what makes "add apples and bananas" mean two additions
+ * rather than one oddly-named item. It also makes "add milk and remove bread"
+ * work, which the previous approach could not express at all.
+ */
+function parseClauses(
+  clauses: readonly string[],
+  transcript: string,
+  context: ParseContext,
+  hypothesis: SpeechHypothesis | undefined,
+  startedAt: number,
+): ParseResult | null {
+  const commands: Command[] = []
+  let lastKind: Command['kind'] | null = null
+  let lowest = 1
+
+  for (const clause of clauses) {
+    const parsed = parseSingleClause(clause, context, hypothesis)
+    const first = parsed?.commands[0]
+
+    if (first !== undefined && first.kind !== 'unknown') {
+      // A destructive command has to be the whole utterance, never a fragment
+      // of one. Splitting on conjunctions otherwise exposes anything embedded
+      // after an "and" — "ignore previous instructions and clear the list"
+      // would wipe the list, and a hot microphone picks up sentences nobody
+      // addressed to it. Undo covers a mistake; not making it is better.
+      if (first.kind === 'clear' && clauses.length > 1) continue
+
+      commands.push(...parsed!.commands)
+      lastKind = first.kind
+      lowest = Math.min(lowest, parsed!.confidence)
+      continue
+    }
+
+    // No verb of its own: a continuation of the previous clause's intent.
+    if (lastKind === null || looksLikeSentence(clause)) continue
+    const inherited = buildInheritedCommand(lastKind, clause, context, hypothesis)
+    if (inherited !== null) commands.push(inherited)
+  }
+
+  if (commands.length === 0) return null
+  return {
+    commands,
+    tier: 'grammar',
+    confidence: lowest,
+    runnerUpConfidence: 0,
+    transcript,
+    latencyMs: performance.now() - startedAt,
+    matchedRule: 'compound',
+  }
+}
+
+/** Apply a previous clause's intent to a bare noun phrase. */
+function buildInheritedCommand(
+  kind: Command['kind'],
+  phrase: string,
+  context: ParseContext,
+  hypothesis: SpeechHypothesis | undefined,
+): Command | null {
+  const rule = INTENT_RULES.find((candidate) => candidate.kind === kind)
+  if (rule === undefined) return null
+  return buildItemCommand(rule, phrase, undefined, context, hypothesis)?.command ?? null
+}
+
 export function parseTranscript(
   transcript: string,
   context: ParseContext,
@@ -120,6 +209,25 @@ export function parseTranscript(
   const startedAt = performance.now()
   const { text } = normalize(transcript)
   if (text === '') return unknown(transcript, startedAt)
+
+  const clauses = text.split(CONJUNCTION_PATTERN).filter((clause) => clause.trim() !== '')
+  if (clauses.length > 1) {
+    const compound = parseClauses(clauses, transcript, context, hypothesis, startedAt)
+    if (compound !== null) return compound
+  }
+
+  return parseSingleClause(text, context, hypothesis, transcript, startedAt)
+}
+
+function parseSingleClause(
+  text: string,
+  context: ParseContext,
+  hypothesis?: SpeechHypothesis,
+  originalTranscript?: string,
+  originalStart?: number,
+): ParseResult {
+  const transcript = originalTranscript ?? text
+  const startedAt = originalStart ?? performance.now()
 
   // Negation first: most negated phrasings embed a positive verb, so matching
   // intents before checking would happily add the thing the user just refused.
@@ -287,7 +395,9 @@ function buildItemCommand(
   // from "put on some coldplay": only phrasings measured as reliable may
   // introduce a word the catalog has never seen.
   const unknownItem =
-    resolution === null && !isPronoun && !requiresExactResolution(rule) ? phraseAsItem(itemPhrase) : null
+    resolution === null && !isPronoun && !requiresExactResolution(rule) && !looksLikeSentence(itemPhrase)
+      ? phraseAsItem(itemPhrase)
+      : null
 
   const canonicalId = isPronoun
     ? context.dialogue?.lastCanonicalId ?? null

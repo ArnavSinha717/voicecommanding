@@ -28,12 +28,11 @@ interface GammaPrior {
 const priors = priorsData as unknown as {
   _source: string
   replenishment: Readonly<Record<string, GammaPrior>>
-  complements: ReadonlyArray<{ a: string; b: string; lift: number; support: number }>
 }
 
 export const PRIORS_SOURCE = priors._source
 
-export type SuggestionKind = 'replenishment' | 'complement' | 'deal'
+export type SuggestionKind = 'replenishment' | 'deal'
 
 export interface Suggestion {
   readonly canonicalId: string
@@ -138,44 +137,22 @@ function replenishmentSuggestions(options: SuggestOptions, onList: ReadonlySet<s
   return out
 }
 
-/**
- * Category pairings that co-occur more than chance.
+/*
+ * COMPLEMENT SUGGESTIONS WERE REMOVED.
  *
- * Deliberately category-level rather than product-level: "pasta goes with pasta
- * sauce" generalises, whereas "Barilla Penne 500g goes with Classico Tomato Basil
- * 24oz" does not, and the product-level matrix is mostly noise at this dataset
- * size.
+ * Instacart gives reliable *category* co-occurrence — dairy and meat appear
+ * together with lift 1.17 across 45,824 baskets. The signal is real. The leap
+ * from it to a specific product is not, and the output was indefensible: buying
+ * milk suggested pork, because pork carried the highest SKU count in the meat
+ * category. Nothing in the data connects those two items; only their categories.
+ *
+ * A usable complement needs product-level co-occurrence — "pasta goes with pasta
+ * sauce" — and at this dataset's density the item-level matrix is almost entirely
+ * noise. Deriving it properly is the obvious next step and is noted in the README
+ * as an acknowledged gap.
+ *
+ * Replenishment and deals remain: both make claims the data actually supports.
  */
-function complementSuggestions(options: SuggestOptions, onList: ReadonlySet<string>): Suggestion[] {
-  const present = new Set(options.items.map((item) => item.category))
-  if (present.size === 0) return []
-
-  const partnerLift = new Map<Category, number>()
-  for (const rule of priors.complements) {
-    if (rule.lift <= 1) continue
-    const a = rule.a as Category
-    const b = rule.b as Category
-    if (present.has(a) && !present.has(b)) partnerLift.set(b, Math.max(partnerLift.get(b) ?? 0, rule.lift))
-    if (present.has(b) && !present.has(a)) partnerLift.set(a, Math.max(partnerLift.get(a) ?? 0, rule.lift))
-  }
-
-  const out: Suggestion[] = []
-  for (const [category, lift] of partnerLift) {
-    const candidate = topByPrior(category, onList)
-    if (candidate === undefined) continue
-    out.push({
-      canonicalId: candidate.canonicalId,
-      name: candidate.name,
-      category,
-      kind: 'complement',
-      // Lift is unbounded above; map it into [0,1) so it ranks against the other
-      // signals without swamping them.
-      score: Math.min(0.9, (lift - 1) * 1.5),
-      reason: `Often bought with what's on your list`,
-    })
-  }
-  return out
-}
 
 /**
  * Categories a grocery list is actually about.
@@ -207,23 +184,11 @@ function dealSuggestions(onList: ReadonlySet<string>): Suggestion[] {
     }))
 }
 
-function topByPrior(category: Category, exclude: ReadonlySet<string>): LexiconEntry | undefined {
-  let best: LexiconEntry | undefined
-  for (const entry of LEXICON) {
-    if (entry.category !== category || exclude.has(entry.canonicalId)) continue
-    if (best === undefined || entry.prior > best.prior) best = entry
-  }
-  return best
-}
 
 export function suggest(options: SuggestOptions): Suggestion[] {
   const onList = new Set(options.items.map((item) => item.canonicalId))
 
-  const all = [
-    ...replenishmentSuggestions(options, onList),
-    ...complementSuggestions(options, onList),
-    ...dealSuggestions(onList),
-  ]
+  const all = [...replenishmentSuggestions(options, onList), ...dealSuggestions(onList)]
 
   // One suggestion per item, keeping the strongest reason for it.
   const best = new Map<string, Suggestion>()

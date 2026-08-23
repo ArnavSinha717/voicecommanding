@@ -335,7 +335,15 @@ export const FOREIGN_DESTINATIONS = new RegExp(
   ].join('|'),
 )
 
-export const CONJUNCTION_PATTERN = /\s+(?:and|aur|plus|as well as)\s+/
+/**
+ * "or" is treated as a separator despite reading as exclusive in writing.
+ *
+ * Spoken to a shopping list it is nearly always additive — "get bananas or some
+ * apples" means bring both, or bring whichever you find. Separating can add one
+ * item too many, which a tap removes; keeping it inside an item name loses the
+ * request silently, and a user cannot recover what they never saw appear.
+ */
+export const CONJUNCTION_PATTERN = /\s+(?:and|aur|plus|as well as|or)\s+/
 
 /**
  * Price filters for voice search.

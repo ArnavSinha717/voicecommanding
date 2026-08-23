@@ -270,6 +270,25 @@ export function normalize(raw: string): NormalizedText {
     '$1 $2',
   )
 
+  // Drop an adverb sitting between a subject and its verb: "i also need apples"
+  // has to reach the rules as "i need apples", or the anchor never matches.
+  //
+  // Deliberately positional rather than a blanket removal — "add just one apple"
+  // must keep its "just". MASSIVE shows this pattern at low frequency (just,
+  // still, currently, please), because its utterances are clipped; real speech
+  // carries far more of it, which is where this was actually found.
+  // Repeated, because speech stacks them: "i also really need some bananas".
+  // After a subject pronoun *or* an imperative verb: "i also need apples" and
+  // "add just one apple" both carry filler in the same role. The second form
+  // was silently producing an item named "just one apple".
+  const interposedAdverb =
+    /\b(i|we|you|add|remove|delete|get|buy|grab|put|include|need|want|find)\s+(?:also|just|really|still|actually|simply|currently|definitely|probably|honestly|literally)\s+(?=\w)/g
+  for (let pass = 0; pass < 3; pass += 1) {
+    const before = text
+    text = text.replace(interposedAdverb, '$1 ')
+    if (text === before) break
+  }
+
   text = stripFraming(text)
 
   const tokens = text === '' ? [] : text.split(' ')
